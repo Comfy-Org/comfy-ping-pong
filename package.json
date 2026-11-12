@@ -1,0 +1,20 @@
+{
+  "name": "ping-pong",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tailnet": "tailscale serve --bg --https=8443 http://127.0.0.1:5173 && tailscale serve status",
+    "tailnet:off": "tailscale serve --https=8443 off"
+  },
+  "dependencies": {
+    "three": "^0.170.0",
+    "ws": "^8.22.2"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

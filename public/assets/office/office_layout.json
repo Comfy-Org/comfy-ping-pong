@@ -1,0 +1,179 @@
+[
+ {
+  "file": "room_shell.glb"
+ },
+ {
+  "file": "pingpong_table.glb"
+ },
+ {
+  "file": "pingpong_net.glb"
+ },
+ {
+  "file": "exit_sign.glb",
+  "position": [
+   -2.9000000000000004,
+   2.55,
+   -6.5
+  ],
+  "rotY": 0,
+  "castShadow": false
+ },
+ {
+  "file": "wall_posters.glb",
+  "position": [
+   -0.3,
+   1.6,
+   -6.5
+  ],
+  "rotY": 0,
+  "castShadow": false
+ },
+ {
+  "file": "fire_extinguisher_sign.glb",
+  "position": [
+   -5.0,
+   1.3,
+   -5.3
+  ],
+  "rotY": 90,
+  "castShadow": false
+ },
+ {
+  "file": "wall_tv.glb",
+  "position": [
+   2.3,
+   1.25,
+   -6.5
+  ],
+  "rotY": 0,
+  "castShadow": false
+ },
+ {
+  "file": "cafe_table.glb",
+  "position": [
+   1.2,
+   0,
+   -5.6
+  ],
+  "rotY": 0
+ },
+ {
+  "file": "cafe_table.glb",
+  "position": [
+   3.4,
+   0,
+   -5.6
+  ],
+  "rotY": 0
+ },
+ {
+  "file": "cafe_chair.glb",
+  "position": [
+   0.55,
+   0,
+   -5.6
+  ],
+  "rotY": 90
+ },
+ {
+  "file": "cafe_chair.glb",
+  "position": [
+   1.85,
+   0,
+   -5.6
+  ],
+  "rotY": -90
+ },
+ {
+  "file": "cafe_chair.glb",
+  "position": [
+   2.75,
+   0,
+   -5.6
+  ],
+  "rotY": 90
+ },
+ {
+  "file": "cafe_chair.glb",
+  "position": [
+   4.05,
+   0,
+   -5.6
+  ],
+  "rotY": -90
+ },
+ {
+  "file": "pendant_light.glb",
+  "position": [
+   1.2,
+   2.6,
+   -5.6
+  ],
+  "rotY": 0,
+  "castShadow": false
+ },
+ {
+  "file": "pendant_light.glb",
+  "position": [
+   3.4,
+   2.6,
+   -5.6
+  ],
+  "rotY": 0,
+  "castShadow": false
+ },
+ {
+  "file": "coat_rack.glb",
+  "position": [
+   -4.55,
+   0,
+   -6.05
+  ],
+  "rotY": 0
+ },
+ {
+  "file": "sofa.glb",
+  "position": [
+   -1.7,
+   0,
+   5.98
+  ],
+  "rotY": 180
+ },
+ {
+  "file": "cafe_table.glb",
+  "position": [
+   0.05,
+   0,
+   6.0
+  ],
+  "rotY": 0
+ },
+ {
+  "file": "table_lamp.glb",
+  "position": [
+   0.05,
+   0.75,
+   6.0
+  ],
+  "rotY": 180
+ },
+ {
+  "file": "lounge_chair.glb",
+  "position": [
+   1.75,
+   0,
+   5.85
+  ],
+  "rotY": 195
+ },
+ {
+  "file": "ladder_shelf.glb",
+  "position": [
+   3.9,
+   0,
+   6.25
+  ],
+  "rotY": 180
+ }
+]
