@@ -13,6 +13,7 @@ import { solveShot, solveServe } from '../physics/trajectory.js';
 import { Match } from './Match.js';
 import { HUD } from '../ui/HUD.js';
 import { Sfx } from '../audio/Sfx.js';
+import { Explore } from '../world/Explore.js';
 
 /** Split a spin vector into topspin (+) / backspin (−) and sidespin, relative to travel. */
 function spinParts(vel, spin) {
@@ -80,6 +81,10 @@ export class Game {
     this.accumulator = 0;
     this.clock = new THREE.Clock();
     this.listeners = {}; // simple event bus for future hooks (camera shakes, replays, etc.)
+
+    /** Players who have walked away from the table (the match pauses while anyone is away). */
+    this.away = [false, false];
+    this.explore = new Explore(this);
 
     this._applyViewpoint();
     this._bindKeys();
@@ -237,6 +242,52 @@ export class Game {
     this.hud.setMeters(this.meters, this.armed, human ? local : -1);
   }
 
+  // ------------------------------------------------------------- walking away
+
+  get paused() {
+    return this.away[0] || this.away[1];
+  }
+
+  canWalkAway() {
+    return !this.demo && this.controllers[this.localSide].isHuman;
+  }
+
+  /** Called by Explore when the local player leaves the table. */
+  onWalkAway() {
+    this._setAway(this.localSide, true);
+    this.net?.send({ t: 'away', on: true });
+  }
+
+  /** Called by Explore when the local player is back at the table. */
+  onWalkBack() {
+    Object.assign(this.human, { wantsServe: false, wantsSuper: false, pressed: false });
+    this.net?.send({ t: 'away', on: false });
+    this._setAway(this.localSide, false);
+  }
+
+  _setAway(side, on) {
+    if (this.away[side] === on) return;
+    this.away[side] = on;
+    const name = this.players[side].def.name;
+    if (on) {
+      if (side !== this.localSide) this.players[side].startWalking();
+      // A point in progress is replayed when play resumes.
+      if (this.phase !== 'gameOver' && this.phase !== 'pointOver') this.startPoint();
+      const you = side === this.localSide;
+      this.hud.message(you ? 'Match paused' : `${name} walked away`, you ? 'Walk back to the table and press F to play' : 'Match paused until they come back', 3);
+    } else {
+      if (side !== this.localSide) this.players[side].stopWalking();
+      if (!this.paused && this.phase !== 'gameOver') {
+        this.startPoint();
+        this.hud.message(side === this.localSide ? 'Back to it' : `${name} is back`, '', 1.5);
+      } else if (this.paused) {
+        const other = this.players[this.away[0] ? 0 : 1].def.name;
+        this.hud.message(`Waiting for ${other}`, 'Match paused until they come back', 3);
+      }
+    }
+    this._updateStatus();
+  }
+
   // ----------------------------------------------------------------- network
   //
   // Ball flight is deterministic, so a hit only ships the ball state. Each flight
@@ -282,6 +333,12 @@ export class Game {
     net.on('start', () => this.resetMatch());
     net.on('restart', () => this.resetMatch());
     net.on('rtt', () => this._updateStatus());
+    net.on('walk', (m) => {
+      this.players[remote].setWalkTarget(m.x, m.z, m.yaw, m.s);
+      this.explore.chess?.applyRemoteSit(remote, !!m.sit);
+    });
+    net.on('chess', (m) => this.explore.chess?.receive(m));
+    net.on('away', (m) => this._setAway(remote, m.on));
     net.on('peer-left', () => this.goOffline('Opponent left'));
     net.on('close', () => this.net && this.goOffline('Connection lost'));
     this._updateStatus();
@@ -293,6 +350,7 @@ export class Game {
     this.net = null;
     net?.close();
     const remote = 1 - this.localSide;
+    if (this.away[remote]) this._setAway(remote, false);
     this.controllers[remote] = new AIController(remote, this.difficulty);
     if (reason) this.hud.message(reason, 'The computer takes over', 3);
     this._updateStatus();
@@ -496,8 +554,12 @@ export class Game {
 
   _frame() {
     const dt = Math.min(this.clock.getDelta(), 0.1);
-    this._tickTimers(dt);
-    for (const c of this.controllers) c.update(dt, this);
+    const paused = this.paused;
+    if (!paused) {
+      this._tickTimers(dt);
+      for (const c of this.controllers) c.update(dt, this);
+    }
+    this.explore.update(dt);
 
     // Hit-stop on a smash: the sim crawls for a moment (real time, not game time).
     let scale = 1;
@@ -505,7 +567,7 @@ export class Game {
       this._slowmo -= dt;
       scale = SUPER.slowmoScale;
     }
-    this.accumulator += dt * PHYSICS.timeScale * scale;
+    this.accumulator += paused ? 0 : dt * PHYSICS.timeScale * scale;
     let steps = 0;
     while (this.accumulator >= PHYSICS.step && steps++ < PHYSICS.maxStepsPerFrame) {
       this._physicsStep(PHYSICS.step);
@@ -515,7 +577,11 @@ export class Game {
 
     if (this.net) {
       this._netSendT -= dt;
-      if (this._netSendT <= 0) {
+      const w = this.players[this.localSide].walk;
+      if (this._netSendT <= 0 && w) {
+        this._netSendT = 1 / 20;
+        this.net.send({ t: 'walk', x: +w.pos.x.toFixed(3), z: +w.pos.z.toFixed(3), yaw: +w.yaw.toFixed(3), s: +w.speed.toFixed(2), sit: w.sit ? 1 : 0 });
+      } else if (this._netSendT <= 0) {
         this._netSendT = 1 / 30;
         const p = this.players[this.localSide].paddle.position;
         this.net.send({
@@ -538,8 +604,11 @@ export class Game {
     }
     for (const p of this.players) p.update(dt);
     this.ball.update(dt);
-    this._updateAssist(dt);
-    this._updateCamera(dt);
+    if (this.explore.active) this.marker.visible = false;
+    else {
+      this._updateAssist(dt);
+      this._updateCamera(dt);
+    }
     this.hud.update(dt);
     this.renderer.render(this.scene, this.camera);
   }
@@ -595,6 +664,17 @@ export class Game {
     this._updateStatus();
   }
 
+  /** Offline: play as the character on `side` (the AI takes the other one). */
+  setLocalSide(side) {
+    if (this.net || side === this.localSide) return;
+    this.localSide = side;
+    this.human.side = side;
+    this.controllers[side] = this.demo ? new AIController(side, this.difficulty) : this.human;
+    this.controllers[1 - side] = new AIController(1 - side, this.difficulty);
+    this._applyViewpoint();
+    this._updateStatus();
+  }
+
   setDemo(on) {
     if (this.net) return;
     this.demo = on;
@@ -606,11 +686,11 @@ export class Game {
   _updateStatus() {
     if (this.net) {
       const ms = this.net.rtt ? ` · ${Math.round(this.net.rtt * 1000)} ms` : '';
-      this.hud.setStatus(`Online · you are ${this.players[this.localSide].def.name}${ms}`);
+      this.hud.setStatus(`Online · you are ${this.players[this.localSide].def.name}${ms}${this.paused ? ' · paused' : ''}`);
       return;
     }
     const d = this.controllers[1 - this.localSide].cfg?.label ?? this.difficulty;
-    this.hud.setStatus(`${d}${this.demo ? ' · AI vs AI' : ''}${this.assist ? '' : ' · assist off'}${this.sfx.muted ? ' · muted' : ''}`);
+    this.hud.setStatus(`${this.paused ? 'Exploring · ' : ''}${d}${this.demo ? ' · AI vs AI' : ''}${this.assist ? '' : ' · assist off'}${this.sfx.muted ? ' · muted' : ''}`);
   }
 
   _bindKeys() {

@@ -1,13 +1,13 @@
 /** WebSocket connection to the room relay, with RTT measurement. */
 export class NetSession {
-  constructor(room) {
+  constructor(room, wantSide = 0) {
     this.room = room;
     this.side = null;
     this.rtt = 0; // seconds, measured peer-to-peer through the relay
     this.closed = false;
     this.handlers = {};
     const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-    this.ws = new WebSocket(`${proto}://${location.host}/ws?room=${encodeURIComponent(room)}`);
+    this.ws = new WebSocket(`${proto}://${location.host}/ws?room=${encodeURIComponent(room)}&side=${wantSide}`);
     this.ws.onopen = () => this._emit('open', {});
     this.ws.onclose = () => {
       this.closed = true;
