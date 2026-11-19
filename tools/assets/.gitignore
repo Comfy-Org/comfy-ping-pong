@@ -1,0 +1,7 @@
+office/out/
+node/node_modules/
+**/raw/
+**/fit/
+**/final/
+*.glb
+*.fbx

@@ -1,0 +1,42 @@
+{
+ "coffee_bar": [
+  "A compact office coffee bar cabinet: matte white lower cabinets with light oak wood countertop, a chrome espresso machine, a coffee grinder and a stack of white cups on top, two small drawers. Single isolated object, front three-quarter view",
+  [
+   1.8,
+   1.0,
+   0.6
+  ]
+ ],
+ "paddle_rack": [
+  "A wall-mounted ping pong paddle rack: light oak wooden board holding four table tennis paddles with red and black rubbers and a small wire basket of white orange balls. Single isolated object, straight front view",
+  [
+   0.9,
+   0.7,
+   0.12
+  ]
+ ],
+ "high_top_table": [
+  "A round bar-height high-top cafe table: white laminate round top, slim black metal pedestal column, round black weighted base. Single isolated object, front three-quarter view",
+  [
+   0.7,
+   1.05,
+   0.7
+  ]
+ ],
+ "printer_bench": [
+  "A small maker workbench: light plywood work table with a black steel frame and lower shelf holding spools of colorful PLA filament; on top an enclosed desktop 3D printer with a dark frame and clear acrylic panels, a small orange printed part on the bed. Single isolated object, front three-quarter view",
+  [
+   1.2,
+   1.5,
+   0.65
+  ]
+ ],
+ "shop_stool": [
+  "A modern backless counter stool: round light oak wood seat, four black powder-coated steel legs with a footrest ring. Single isolated object, front three-quarter view",
+  [
+   0.42,
+   0.75,
+   0.42
+  ]
+ ]
+}

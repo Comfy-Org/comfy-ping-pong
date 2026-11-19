@@ -1,0 +1,1482 @@
+[
+ {
+  "tool": "submit_workflow",
+  "description": "booth_bench_grey",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for booth_bench_grey>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_booth_bench_grey",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "booth_table",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for booth_table>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_booth_table",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "hashtag_neon",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for hashtag_neon>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_hashtag_neon",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "duck_plush",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for duck_plush>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_duck_plush",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "standing_desk",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for standing_desk>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_standing_desk",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "monitor_black",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for monitor_black>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_monitor_black",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "monitor_white",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for monitor_white>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_monitor_white",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "office_chair_mesh",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for office_chair_mesh>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_office_chair_mesh",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "wall_planter",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for wall_planter>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_wall_planter",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "foosball_table",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for foosball_table>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_foosball_table",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "duck_portrait",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for duck_portrait>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_duck_portrait",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "drinks_fridge",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for drinks_fridge>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_drinks_fridge",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "arcade_basketball",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for arcade_basketball>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_arcade_basketball",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "rolling_whiteboard",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A mobile whiteboard on a white metal frame with four casters, the board covered in red marker diagrams and flowcharts. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/rolling_whiteboard"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_rolling_whiteboard",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "sectional_sofa",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for sectional_sofa>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_sectional_sofa",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "marble_coffee_table",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for marble_coffee_table>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_marble_coffee_table",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "tv_rolling_stand",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A large 75 inch flat screen display on a black mobile rolling stand with two splayed legs, a shelf and casters, screen showing a dark blue project dashboard. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/tv_rolling_stand"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_tv_rolling_stand",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "floor_lamp_paper",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A tall rectangular column floor lamp with a white rice-paper shade glowing warm, dark wooden base. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/floor_lamp_paper"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_floor_lamp_paper",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "potted_tree",
+  "workflow": {
+   "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+     "image": "<upload: reference image for potted_tree>"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_potted_tree",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "kids_bookshelf",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A light natural wood four-tier open bookshelf filled with colorful children's books, a few plush toys on top. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/kids_bookshelf"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_kids_bookshelf",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "beanbag",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A large round fluffy white sherpa bean bag chair. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/beanbag"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_beanbag",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "green_booth",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A single-sided upholstered booth banquette bench about 2 m wide: sage green woven fabric, tall flat padded back, black plinth base. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/green_booth"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_green_booth",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "dining_table_wood",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A rectangular dining table with a dark rustic brown wood-grain top and black metal legs. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/dining_table_wood"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_dining_table_wood",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "dining_chair_black",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A black faux-leather dining chair with a vertical channel-stitched backrest and thin black metal legs, facing the camera. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/dining_chair_black"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_dining_chair_black",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "cafe_chair_beige",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A beige upholstered shell dining chair with a rounded one-piece seat and back and slim light legs, facing the camera. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/cafe_chair_beige"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_cafe_chair_beige",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "kitchen_island",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A long kitchen island with a white quartz countertop with soft grey veining, light oak wood cabinet base, and one rounded end. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/kitchen_island"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_kitchen_island",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "fridge_steel",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A stainless steel French-door refrigerator with a bottom freezer drawer and long vertical handles, front view. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/fridge_steel"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_fridge_steel",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "pendant_cylinder",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A white matte cylinder pendant ceiling light hanging from a thin black cable, light glowing from its bottom opening. Single isolated object, three-quarter front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office2/pendant_cylinder"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_pendant_cylinder",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ }
+]
