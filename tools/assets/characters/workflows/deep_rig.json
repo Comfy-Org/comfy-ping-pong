@@ -1,0 +1,96 @@
+{
+ "1": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "<upload: Deep T-pose reference>"
+  },
+  "_meta": {
+   "title": "Deep T-pose reference"
+  }
+ },
+ "2": {
+  "class_type": "MeshyImageToModelNode",
+  "inputs": {
+   "model": "meshy-7.1",
+   "image": [
+    "1",
+    0
+   ],
+   "should_remesh": "true",
+   "should_remesh.topology": "triangle",
+   "should_remesh.target_polycount": 30000,
+   "symmetry_mode": "auto",
+   "should_texture": "true",
+   "should_texture.enable_pbr": false,
+   "should_texture.texture_prompt": "",
+   "should_texture.texture_resolution": "2k",
+   "pose_mode": "T-pose",
+   "seed": 7,
+   "ultra_mode": false
+  },
+  "_meta": {
+   "title": "Meshy image to model (Deep)"
+  }
+ },
+ "3": {
+  "class_type": "MeshyRigModelNode",
+  "inputs": {
+   "meshy_task_id": [
+    "2",
+    1
+   ],
+   "height_meters": 1.75
+  },
+  "_meta": {
+   "title": "Meshy rig (Deep)"
+  }
+ },
+ "4": {
+  "class_type": "Save3DAdvanced",
+  "inputs": {
+   "model_3d": [
+    "3",
+    2
+   ],
+   "filename_prefix": "3d/deep_rigged",
+   "viewport_state": "",
+   "width": 1024,
+   "height": 1024
+  },
+  "_meta": {
+   "title": "Save rigged GLB"
+  }
+ },
+ "5": {
+  "class_type": "Save3DAdvanced",
+  "inputs": {
+   "model_3d": [
+    "3",
+    3
+   ],
+   "filename_prefix": "3d/deep_rigged",
+   "viewport_state": "",
+   "width": 1024,
+   "height": 1024
+  },
+  "_meta": {
+   "title": "Save rigged FBX"
+  }
+ },
+ "6": {
+  "class_type": "Save3DAdvanced",
+  "inputs": {
+   "model_3d": [
+    "2",
+    2
+   ],
+   "filename_prefix": "3d/deep_static",
+   "viewport_state": "",
+   "width": 1024,
+   "height": 1024
+  },
+  "_meta": {
+   "title": "Save unrigged GLB"
+  }
+ }
+}

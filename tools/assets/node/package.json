@@ -1,0 +1,11 @@
+{
+  "name": "comfy-ping-pong-asset-tools",
+  "private": true,
+  "type": "module",
+  "description": "glTF compression and validation used by tools/assets",
+  "dependencies": {
+    "@gltf-transform/cli": "^4.1.1",
+    "gltf-validator": "^2.0.0-dev.3.10",
+    "sharp": "^0.33.5"
+  }
+}

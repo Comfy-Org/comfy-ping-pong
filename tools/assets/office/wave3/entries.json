@@ -1,0 +1,10 @@
+[
+ {"file": "coffee_bar.glb", "position": [6.3, 0, -6.17], "rotY": 0},
+ {"file": "paddle_rack.glb", "position": [7.44, 1.2, -1.2], "rotY": -90, "castShadow": false},
+ {"file": "high_top_table.glb", "position": [5.2, 0, -2.6], "rotY": 0},
+ {"file": "shop_stool.glb", "position": [5.2, 0, -3.2], "rotY": 0},
+ {"file": "shop_stool.glb", "position": [5.2, 0, -2.0], "rotY": 180},
+ {"file": "shop_stool.glb", "position": [5.8, 0, -2.6], "rotY": -90},
+ {"file": "printer_bench.glb", "position": [-12.6, 0, -16.8], "rotY": 90, "zone": "lounge"},
+ {"file": "shop_stool.glb", "position": [-11.85, 0, -16.8], "rotY": -90, "zone": "lounge"}
+]

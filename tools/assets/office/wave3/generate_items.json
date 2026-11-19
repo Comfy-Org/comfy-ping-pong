@@ -1,0 +1,312 @@
+[
+ {
+  "tool": "submit_workflow",
+  "description": "coffee_bar",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A compact office coffee bar cabinet: matte white lower cabinets with light oak wood countertop, a chrome espresso machine, a coffee grinder and a stack of white cups on top, two small drawers. Single isolated object, front three-quarter view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office3/coffee_bar"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_coffee_bar",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "paddle_rack",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A wall-mounted ping pong paddle rack: light oak wooden board holding four table tennis paddles with red and black rubbers and a small wire basket of white orange balls. Single isolated object, straight front view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office3/paddle_rack"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_paddle_rack",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "high_top_table",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A round bar-height high-top cafe table: white laminate round top, slim black metal pedestal column, round black weighted base. Single isolated object, front three-quarter view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office3/high_top_table"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_high_top_table",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "printer_bench",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A small maker workbench: light plywood work table with a black steel frame and lower shelf holding spools of colorful PLA filament; on top an enclosed desktop 3D printer with a dark frame and clear acrylic panels, a small orange printed part on the bed. Single isolated object, front three-quarter view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office3/printer_bench"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "auto",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_printer_bench",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ },
+ {
+  "tool": "submit_workflow",
+  "description": "shop_stool",
+  "workflow": {
+   "1": {
+    "class_type": "GeminiNanoBanana2V2",
+    "inputs": {
+     "prompt": "A modern backless counter stool: round light oak wood seat, four black powder-coated steel legs with a footrest ring. Single isolated object, front three-quarter view from slightly above, entire object visible with margin, centered. Plain solid light grey background, soft even studio lighting, no shadows, no people, no text or logos. Clean product photo for 3D modeling.",
+     "model": "Gemini Nano Banana 2.1",
+     "model.aspect_ratio": "1:1",
+     "model.resolution": "1K",
+     "model.thinking_level": "MEDIUM",
+     "seed": 7,
+     "response_modalities": "IMAGE"
+    }
+   },
+   "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+     "images": [
+      "1",
+      0
+     ],
+     "filename_prefix": "office3/shop_stool"
+    }
+   },
+   "3": {
+    "class_type": "MeshyImageToModelNode",
+    "inputs": {
+     "model": "meshy-7.1",
+     "image": [
+      "1",
+      0
+     ],
+     "should_remesh": "true",
+     "should_remesh.topology": "triangle",
+     "should_remesh.target_polycount": 10000,
+     "symmetry_mode": "on",
+     "should_texture": "true",
+     "should_texture.enable_pbr": false,
+     "should_texture.texture_prompt": "",
+     "should_texture.texture_resolution": "2k",
+     "pose_mode": "",
+     "seed": 3,
+     "ultra_mode": false
+    }
+   },
+   "4": {
+    "class_type": "Save3DAdvanced",
+    "inputs": {
+     "model_3d": [
+      "3",
+      2
+     ],
+     "filename_prefix": "3d/office_shop_stool",
+     "viewport_state": "",
+     "width": 1024,
+     "height": 1024
+    }
+   }
+  }
+ }
+]

@@ -1,0 +1,44 @@
+{
+ "1": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "<upload: input image>"
+  }
+ },
+ "2": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "<upload: input image>"
+  }
+ },
+ "3": {
+  "class_type": "GeminiNanoBanana2V2",
+  "inputs": {
+   "prompt": "Create a full-body 3D game character reference of the young man in the FIRST image, keeping his exact face, eyes, short dark tousled hair with a light fringe, eyebrows, smile and skin tone so he is clearly recognizable. Match the rendering style, framing, lighting, scale and pose of the SECOND image exactly (use the second image only for style and pose, not for identity). Slightly stylized realistic video-game look. He wears a casual athletic outfit for table tennis: a plain white crew-neck t-shirt, dark navy athletic shorts, white sports socks and white sneakers. No necklace. Standing in a neutral symmetrical T-pose, arms straight out to the sides at shoulder height, palms down, fingers together, legs slightly apart, feet flat, facing directly at the camera. Entire body visible from head to toe with margin around it, centered. Plain solid light grey background, even soft studio lighting, no shadows, no props, no text.",
+   "model": "Gemini Nano Banana 2.1",
+   "model.aspect_ratio": "1:1",
+   "model.resolution": "2K",
+   "model.thinking_level": "MEDIUM",
+   "model.images.image_1": [
+    "1",
+    0
+   ],
+   "model.images.image_2": [
+    "2",
+    0
+   ],
+   "seed": 7,
+   "response_modalities": "IMAGE"
+  }
+ },
+ "4": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "3",
+    0
+   ],
+   "filename_prefix": "steven_tpose_ref"
+  }
+ }
+}

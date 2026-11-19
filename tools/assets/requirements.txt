@@ -1,0 +1,6 @@
+numpy==2.5.5
+scipy==1.18.1
+trimesh==5.2.1
+moderngl==5.13.0
+pillow==13.0.0
+networkx==3.7
