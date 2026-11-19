@@ -30,10 +30,21 @@ function shareOrigin(server) {
   });
 }
 
+// The office TV plays the purz.tv channel. purz.tv can't be framed and its clips have no CORS
+// headers, so the game fetches the manifest and clips through this same-origin proxy instead
+// (WebGL can only use video it's allowed to read).
+const proxy = {
+  '/purz': {
+    target: 'https://purz.tv',
+    changeOrigin: true,
+    rewrite: (p) => p.replace(/^\/purz/, ''),
+  },
+};
+
 export default defineConfig({
   // IPv4 loopback explicitly: `tailscale serve` proxies to 127.0.0.1, and plain "localhost" can bind ::1 only.
-  server: { host: '127.0.0.1', allowedHosts: tunnelHosts },
-  preview: { host: '127.0.0.1', allowedHosts: tunnelHosts },
+  server: { host: '127.0.0.1', allowedHosts: tunnelHosts, proxy },
+  preview: { host: '127.0.0.1', allowedHosts: tunnelHosts, proxy },
   plugins: [
     {
       name: 'pingpong-relay',

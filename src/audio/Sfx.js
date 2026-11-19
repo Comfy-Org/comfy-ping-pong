@@ -48,6 +48,11 @@ export class Sfx {
   ready() {
     this._blip(880, 0.12, { type: 'triangle', gain: 0.12, slide: 1.5 });
   }
+  /** Chess piece set down on the board: a soft wooden tock (a sharper double tock on a capture). */
+  chessMove(capture = false) {
+    this._blip(520, 0.05, { type: 'triangle', gain: 0.14, slide: 0.7 });
+    if (capture) setTimeout(() => this._blip(380, 0.06, { type: 'triangle', gain: 0.16, slide: 0.6 }), 70);
+  }
   point(won) {
     this._blip(won ? 660 : 300, 0.25, { type: 'triangle', gain: 0.15, slide: won ? 1.5 : 0.6 });
   }

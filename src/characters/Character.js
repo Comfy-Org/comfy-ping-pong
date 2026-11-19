@@ -14,6 +14,9 @@ export const RIG = {
   spine: 'Spine01',
 };
 
+/** Leg bones, used for the procedural walk cycle. */
+const LEGS = { hips: 'Hips', lUp: 'LeftUpLeg', lLow: 'LeftLeg', rUp: 'RightUpLeg', rLow: 'RightLeg' };
+
 const _a = new THREE.Vector3();
 const _b = new THREE.Vector3();
 const _bp = new THREE.Vector3();
@@ -23,6 +26,17 @@ const _bq = new THREE.Quaternion();
 const _pq = new THREE.Quaternion();
 const UP = new THREE.Vector3(0, 1, 0);
 const _IDENT = new THREE.Quaternion();
+const _axis = new THREE.Vector3();
+const _rq = new THREE.Quaternion();
+
+/** Rotate a bone by `angle` about a WORLD-space axis (works whatever the bone's local frame is). */
+function rotateBoneWorld(bone, axis, angle) {
+  _rq.setFromAxisAngle(axis, angle);
+  bone.getWorldQuaternion(_bq).premultiply(_rq);
+  bone.parent.getWorldQuaternion(_pq).invert();
+  bone.quaternion.copy(_pq.multiply(_bq));
+  bone.updateMatrixWorld(true);
+}
 
 /**
  * CCD IK over a bone chain (root → tip) so `effector` reaches `target` (world).
@@ -83,6 +97,8 @@ export class Character {
     this._mood = 0; // placeholder only: >0 celebrate, <0 sad (seconds remaining)
     this._ikTarget = new THREE.Vector3();
     this._reach = new THREE.Vector3(); // learned body offset so the hand can reach the paddle
+    /** Free-roam state while walking around the office (null = at the table). */
+    this.walk = null;
 
     this.ready = def.model
       ? this.loadModel(def.model).catch((e) => console.warn(`[${def.name}] model failed to load, keeping placeholder`, e))
@@ -122,6 +138,13 @@ export class Character {
     const b = Object.fromEntries(Object.entries(RIG).map(([k, n]) => [k, find(n)]));
     this.bones = Object.values(b).every(Boolean) ? b : null;
     if (!this.bones) console.warn(`[${this.def.name}] arm bones not found; IK disabled`);
+    const l = Object.fromEntries(Object.entries(LEGS).map(([k, n]) => [k, find(n)]));
+    this.legs = Object.values(l).every(Boolean) ? l : null;
+    // Hip height in the body's own frame (rest pose) — used to seat the character on a chair.
+    if (this.legs) {
+      this.root.updateMatrixWorld(true);
+      this._hipsRestY = this.root.worldToLocal(this.legs.hips.getWorldPosition(new THREE.Vector3())).y;
+    }
     this._rest = [];
     model.traverse((o) => {
       if (o.isBone) this._rest.push([o, o.position.clone(), o.quaternion.clone()]);
@@ -199,9 +222,154 @@ export class Character {
     this.label.material.opacity = 1;
   }
 
+  // ---------------------------------------------------------------- walking
+
+  /** Leave the table: the body is now driven by `walk` (position, heading, speed). */
+  startWalking() {
+    this.stopEmote();
+    this._mood = 0;
+    this.walk = {
+      pos: new THREE.Vector3(this.root.position.x, 0, this.root.position.z),
+      yaw: this.root.rotation.y,
+      speed: 0,
+      phase: 0,
+      target: null, // remote players: latest network state to ease toward
+    };
+  }
+
+  stopWalking() {
+    this.walk = null;
+    this.root.visible = true;
+    this.paddle.group.visible = true;
+    this.root.rotation.y = this.side === 0 ? Math.PI : 0;
+    this.root.position.y = 0;
+    this.paddle.pivot.position.set(0, 0, 0);
+    this._reach.set(0, 0, 0);
+  }
+
+  /** Network update for a remote walker. */
+  setWalkTarget(x, z, yaw, speed) {
+    if (!this.walk) this.startWalking();
+    this.walk.target = { x, z, yaw, speed };
+  }
+
+  _updateWalk(dt) {
+    const w = this.walk;
+    if (w.sit && !w.target) return this._updateSit(dt);
+    if (w.target) {
+      const a = Math.min(1, dt * 12);
+      w.pos.x += (w.target.x - w.pos.x) * a;
+      w.pos.z += (w.target.z - w.pos.z) * a;
+      w.yaw += Math.atan2(Math.sin(w.target.yaw - w.yaw), Math.cos(w.target.yaw - w.yaw)) * a;
+      w.speed += (w.target.speed - w.speed) * a;
+    }
+    if (w.sit) return this._updateSit(dt);
+    // ~0.7 m per step → one full cycle (two steps) every 1.4 m.
+    w.phase += (w.speed * Math.PI * 2 * dt) / 1.4;
+    const amp = THREE.MathUtils.clamp(w.speed * 0.2, 0, 0.62);
+    this.root.position.set(w.pos.x, Math.abs(Math.cos(w.phase)) * amp * 0.06 - amp * 0.03, w.pos.z);
+    this.root.rotation.y = w.yaw;
+    this.root.updateMatrixWorld(true);
+
+    if (!this.model) return;
+    for (const [bone, pos, quat] of this._rest) {
+      bone.position.copy(pos);
+      bone.quaternion.copy(quat);
+    }
+    this.model.updateMatrixWorld(true);
+    const s = this.def.height / 1.78;
+
+    if (this.legs) {
+      const L = this.legs;
+      // Character's sideways axis in world space: rotating about it swings legs fore/aft.
+      _axis.set(1, 0, 0).transformDirection(this.model.matrixWorld);
+      const sw = Math.sin(w.phase);
+      // Thighs swing opposite each other; a negative angle about +X swings the foot forward (+Z).
+      rotateBoneWorld(L.lUp, _axis, -sw * amp);
+      rotateBoneWorld(L.rUp, _axis, sw * amp);
+      // Knees bend while the leg swings through (never backward).
+      rotateBoneWorld(L.lLow, _axis, Math.max(0, Math.cos(w.phase)) * amp * 1.4);
+      rotateBoneWorld(L.rLow, _axis, Math.max(0, -Math.cos(w.phase)) * amp * 1.4);
+      // A little forward lean when jogging.
+      if (this.bones) rotateBoneWorld(this.bones.spine, _axis, -amp * 0.12);
+    }
+
+    if (this.bones) {
+      const b = this.bones;
+      const sw = Math.sin(w.phase) * amp * 0.32;
+      // Arms hang and swing opposite the legs (local +X is the character's left).
+      this._ikTarget.set(0.2 * s, 0.84 * s, sw * s + 0.03).applyMatrix4(this.root.matrixWorld);
+      solveCCD([b.leftArm, b.leftForeArm], b.leftHand, this._ikTarget);
+      this._ikTarget.set(-0.2 * s, 0.84 * s, -sw * s + 0.03).applyMatrix4(this.root.matrixWorld);
+      solveCCD([b.rightArm, b.rightForeArm], b.rightHand, this._ikTarget);
+      // Paddle comes along in the racket hand (visual only).
+      (this.hand > 0 ? b.rightHand : b.leftHand).getWorldPosition(_a);
+      this.paddle.pivot.position.copy(_a.sub(this.paddle.position));
+      this.paddle.group.updateMatrixWorld(true);
+    }
+  }
+
+  /**
+   * Seated at a table: walk.sit = { y: seat height, table: { x, z, top } }.
+   * Thighs forward, shins down, hands resting on the table; walk.reach = { point, t }
+   * sends the racket hand to a point for t seconds (e.g. moving a chess piece).
+   */
+  _updateSit(dt) {
+    const w = this.walk;
+    const st = w.sit;
+    const hipsY = this._hipsRestY ?? 0.95 * (this.def.height / 1.78);
+    this.root.position.set(w.pos.x, st.y + 0.08 - hipsY, w.pos.z);
+    this.root.rotation.y = w.yaw;
+    this.root.updateMatrixWorld(true);
+    this.paddle.group.visible = false;
+    w.speed = 0;
+    if (!this.model) return;
+    for (const [bone, pos, quat] of this._rest) {
+      bone.position.copy(pos);
+      bone.quaternion.copy(quat);
+    }
+    this.model.updateMatrixWorld(true);
+    _axis.set(1, 0, 0).transformDirection(this.model.matrixWorld);
+    if (this.legs) {
+      const L = this.legs;
+      rotateBoneWorld(L.lUp, _axis, -1.45);
+      rotateBoneWorld(L.rUp, _axis, -1.45);
+      rotateBoneWorld(L.lLow, _axis, 1.45);
+      rotateBoneWorld(L.rLow, _axis, 1.45);
+    }
+    if (!this.bones) return;
+    const b = this.bones;
+    // Lean in over the table; a little more while reaching.
+    const reaching = w.reach && w.reach.t > 0;
+    rotateBoneWorld(b.spine, _axis, reaching ? -0.3 : -0.12);
+    const fx = Math.sin(w.yaw);
+    const fz = Math.cos(w.yaw);
+    const cx = w.pos.x + fx * 0.3;
+    const cz = w.pos.z + fz * 0.3;
+    const y = (st.table?.top ?? 0.75) + 0.035;
+    // _axis is the character's left.
+    const place = (side) => this._ikTarget.set(cx + _axis.x * 0.17 * side, y, cz + _axis.z * 0.17 * side);
+    const racketIsRight = this.hand > 0;
+    const [racket, off] = racketIsRight
+      ? [[b.rightArm, b.rightForeArm, b.rightHand], [b.leftArm, b.leftForeArm, b.leftHand]]
+      : [[b.leftArm, b.leftForeArm, b.leftHand], [b.rightArm, b.rightForeArm, b.rightHand]];
+    place(racketIsRight ? 1 : -1);
+    solveCCD([off[0], off[1]], off[2], this._ikTarget);
+    if (reaching) {
+      w.reach.t -= dt;
+      this._ikTarget.copy(w.reach.point);
+      this._ikTarget.y += 0.03;
+      solveCCD([b.spine, racket[0], racket[1]], racket[2], this._ikTarget, 8, [0.3, 1, 1]);
+    } else {
+      place(racketIsRight ? -1 : 1);
+      solveCCD([racket[0], racket[1]], racket[2], this._ikTarget);
+    }
+  }
+
   // ---------------------------------------------------------------- update
 
   update(dt) {
+    if (this.walk) return this._updateWalk(dt);
     const p = this.paddle.position;
     // Body stands beside the paddle on the side opposite the racket hand.
     const targetX = p.x + this.facing * this.hand * 0.24 + this._reach.x;

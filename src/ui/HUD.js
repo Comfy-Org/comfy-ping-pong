@@ -15,8 +15,13 @@ export class HUD {
         <span>Mouse: paddle</span><span>Click / Space: serve</span><span>Swipe sideways: aim</span>
         <span>Hold button at contact: power</span><span>Swipe up / down through the ball: topspin / backspin</span>
         <span>E / Shift / right-click: super smash (meter full)</span><span>1 2 3: difficulty</span><span>P: AI vs AI</span>
-        <span>G: aim assist</span><span>M: mute</span><span>R: restart</span>
+        <span>G: aim assist</span><span>M: mute</span><span>C: narrator</span><span>T: TV sound</span><span>R: restart</span><span><b>F: walk away from the table</b></span>
       </div>
+      <div class="help explore-help">
+        <span>WASD / arrows: walk</span><span>Shift: jog</span><span>Drag: look around</span><span>Wheel: zoom</span>
+        <span>F: interact</span><span>T: TV sound</span><span>Y: next clip</span><span>C: narrator</span>
+      </div>
+      <div class="prompt"></div>
       <div class="status"></div>`;
     root.appendChild(this.el);
     this.$ = (s) => this.el.querySelector(s);
@@ -59,6 +64,20 @@ export class HUD {
     el.textContent = text;
     el.className = `flash show ${kind}`;
     this._flashTimer = kind === 'super' ? 1.4 : 0.8;
+  }
+
+  /** Interaction prompt at the bottom (HTML allowed: <kbd>, <em>). Empty hides it. */
+  setPrompt(html) {
+    const el = this.$('.prompt');
+    if (el._html === html) return;
+    el._html = html;
+    el.innerHTML = html;
+    el.classList.toggle('show', !!html);
+  }
+
+  /** 'match' or 'explore': swaps the help line. */
+  setMode(mode) {
+    this.el.classList.toggle('exploring', mode === 'explore');
   }
 
   setStatus(text) {

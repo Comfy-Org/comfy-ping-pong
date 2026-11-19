@@ -12,14 +12,16 @@ export function attachRelay(httpServer, path = '/ws') {
   httpServer.on('upgrade', (req, socket, head) => {
     const url = new URL(req.url, 'http://localhost');
     if (url.pathname !== path) return; // leave Vite's HMR socket alone
-    wss.handleUpgrade(req, socket, head, (ws) => join(ws, (url.searchParams.get('room') || '').toUpperCase()));
+    wss.handleUpgrade(req, socket, head, (ws) => join(ws, (url.searchParams.get('room') || '').toUpperCase(), url.searchParams.get('side')));
   });
 
-  function join(ws, code) {
+  /** `want` is the side the player picked on the character screen; they get it if it's free. */
+  function join(ws, code, want) {
     if (!/^[A-Z0-9]{3,12}$/.test(code)) return ws.close(4000, 'bad room code');
     let room = rooms.get(code);
     if (!room) rooms.set(code, (room = [null, null]));
-    const side = !room[0] ? 0 : !room[1] ? 1 : -1;
+    const pref = want === '1' ? 1 : 0;
+    const side = !room[pref] ? pref : !room[1 - pref] ? 1 - pref : -1;
     if (side < 0) {
       ws.send(JSON.stringify({ t: 'full' }));
       return ws.close(4001, 'room full');
