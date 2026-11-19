@@ -27,7 +27,7 @@ const TURN = 10; // rad/s heading slew
 
 /** Furniture that blocks walking (wall art, lights and signs don't). */
 const SOLID =
-  /cafe_table|cafe_chair|coat_rack|sofa|lounge_chair|ladder_shelf|pingpong_table|booth_bench_grey|booth_table|green_booth|standing_desk|office_chair_mesh|foosball_table|drinks_fridge|fridge_steel|arcade_basketball|rolling_whiteboard|marble_coffee_table|tv_rolling_stand|potted_tree|kids_bookshelf|beanbag|dining_table_wood|dining_chair_black|kitchen_island|floor_lamp_paper/;
+  /cafe_table|cafe_chair|coat_rack|sofa|lounge_chair|ladder_shelf|pingpong_table|booth_bench_grey|booth_table|green_booth|standing_desk|office_chair_mesh|foosball_table|drinks_fridge|fridge_steel|arcade_basketball|rolling_whiteboard|marble_coffee_table|tv_rolling_stand|potted_tree|kids_bookshelf|beanbag|dining_table_wood|dining_chair_black|kitchen_island|floor_lamp_paper|coffee_bar|high_top_table|printer_bench|shop_stool/;
 
 export class Explore {
   constructor(game) {

@@ -14,6 +14,13 @@ const add = (zone, file, x, y, z, rotY = 0, extra = {}) => out.push({ file, posi
 
 // Game room: the grey booth nook by the door gets its neon sign.
 add('game', 'hashtag_neon.glb', -7.47, 1.45, -5.15, 90, { castShadow: false });
+// The +X wing's back corner: a coffee bar, a high-top with stools, and the paddles on the wall.
+add('game', 'coffee_bar.glb', 6.3, 0, -6.17);
+add('game', 'paddle_rack.glb', 7.44, 1.2, -1.2, -90, { castShadow: false });
+add('game', 'high_top_table.glb', 5.2, 0, -2.6);
+add('game', 'shop_stool.glb', 5.2, 0, -3.2);
+add('game', 'shop_stool.glb', 5.2, 0, -2.0, 180);
+add('game', 'shop_stool.glb', 5.8, 0, -2.6, -90);
 
 // Open desk area: three back-to-back rows of standing desks.
 const DESK_X = [-3.6, -2, -0.4, 1.2, 2.8, 4.4];
@@ -43,6 +50,8 @@ add('lounge', 'potted_tree.glb', -12.3, 0, -19.8);
 add('lounge', 'floor_lamp_paper.glb', -12.3, 0, -14.0);
 add('lounge', 'kids_bookshelf.glb', -6.55, 0, -18.6, -90);
 add('lounge', 'beanbag.glb', -7.3, 0, -16.6, -120);
+add('lounge', 'printer_bench.glb', -12.6, 0, -16.8, 90); // the 3D printer, by the west windows
+add('lounge', 'shop_stool.glb', -11.85, 0, -16.8, -90);
 
 // Glass meeting rooms (you can see in; the doors are for later).
 for (const cx of [-11.9, -9.6]) {
