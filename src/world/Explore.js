@@ -4,6 +4,7 @@ import { buildCardTable } from './Props.js';
 import { ChessTable } from '../chess/ChessTable.js';
 import { zoneAt } from './Floor.js';
 import { Seats } from './Seats.js';
+import { Basketball } from './Basketball.js';
 
 /**
  * Free-roam ("explore") mode: walk your avatar around the office.
@@ -111,6 +112,12 @@ export class Explore {
       scene.add(set);
       this.spots.push({ id: 'cards', label: 'Cards', x: back[1].x, z: back[1].z, r: 1.3, soon: true });
     }
+    // The arcade basketball machine.
+    const arcade = props.find((p) => p.file === 'arcade_basketball.glb');
+    if (arcade) {
+      this.hoops = new Basketball(this.game, this, arcade.obj);
+      this.spots.push(this.hoops.spot());
+    }
     // Every chair, stool, sofa, booth and beanbag (the chess chairs belong to chess).
     this.seats = new Seats(this.game, this, props, this.chess?.seats ?? []);
     this.spots.push(...this.seats.spots());
@@ -161,7 +168,7 @@ export class Explore {
     dom.addEventListener(
       'wheel',
       (e) => {
-        if (!this.active || this.chess?.seated) return;
+        if (!this.active || this.chess?.seated || this.hoops?.playing) return;
         this.dist = THREE.MathUtils.clamp(this.dist + e.deltaY * 0.003, 1.4, 6);
         e.preventDefault();
       },
@@ -169,9 +176,9 @@ export class Explore {
     );
   }
 
-  /** Mouse steers the camera: exploring, not at the chess board or the computer. */
+  /** Mouse steers the camera: exploring, not at the chess board, the arcade or the computer. */
   _canLook() {
-    return this.active && !this.chess?.seated && !this.seats?.terminal.open;
+    return this.active && !this.chess?.seated && !this.hoops?.playing && !this.seats?.terminal.open;
   }
 
   _onF() {
@@ -182,10 +189,12 @@ export class Explore {
     }
     if (this.chess?.seated) return this.chess.stand();
     if (this.seats?.current) return this.seats.stand();
+    if (this.hoops?.playing) return this.hoops.stand();
     const spot = this._nearSpot;
     if (!spot) return;
     if (spot.id === 'pingpong') this.exit();
     else if (spot.id === 'chess' && this.chess) this.chess.sit();
+    else if (spot.id === 'hoops' && this.hoops) this.hoops.sit();
     else if (spot.id === 'seat') this.seats.sit(spot.seat);
     else {
       if (spot.locked) g.hud.message('Locked', 'Nice try', 1.5);
@@ -233,8 +242,9 @@ export class Explore {
 
   update(dt) {
     this.chess?.update(dt);
-    // The chess board and the computer need a free cursor.
+    // The chess board, the arcade and the computer need a free cursor.
     if (this._dom && document.pointerLockElement === this._dom && !this._canLook()) document.exitPointerLock();
+    this.hoops?.update(dt);
     this.game.arena.floor?.update(this.active && !this.chess?.seated && !this.seats?.terminal.open ? this.game.players[this.game.localSide].walk?.pos : null);
     if (!this.active) return;
     const g = this.game;
@@ -248,6 +258,11 @@ export class Explore {
     if (this.seats?.current) {
       this._nearSpot = null;
       this.seats.update(dt);
+      return;
+    }
+    if (this.hoops?.playing) {
+      this._nearSpot = null;
+      this.hoops.updateCamera(dt);
       return;
     }
 
