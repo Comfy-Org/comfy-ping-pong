@@ -133,19 +133,30 @@ export class Explore {
     });
     window.addEventListener('keyup', (e) => this.keys.delete(e.code));
     window.addEventListener('blur', () => this.keys.clear());
+    // Open-world camera: click once and the mouse steers the camera (pointer lock; Esc frees
+    // the cursor). Dragging still works when the cursor is free.
+    this._dom = dom;
+    this._lastLook = -Infinity;
     dom.addEventListener('pointerdown', (e) => {
-      if (!this.active || this.chess?.seated) return;
+      if (!this._canLook()) return;
+      if (document.pointerLockElement !== dom && e.button === 0) dom.requestPointerLock?.()?.catch?.(() => {});
       this._dragging = true;
       this._lastX = e.clientX;
       this._lastY = e.clientY;
     });
     window.addEventListener('pointerup', () => (this._dragging = false));
     window.addEventListener('pointermove', (e) => {
-      if (!this.active || !this._dragging) return;
-      this.yaw -= (e.clientX - this._lastX) * 0.006;
-      this.pitch = THREE.MathUtils.clamp(this.pitch + (e.clientY - this._lastY) * 0.004, 0.05, 1.1);
+      if (!this._canLook()) return;
+      let dx;
+      let dy;
+      if (document.pointerLockElement === dom) [dx, dy] = [e.movementX * 0.42, e.movementY * 0.42];
+      else if (this._dragging) [dx, dy] = [e.clientX - this._lastX, e.clientY - this._lastY];
+      else return;
+      this.yaw -= dx * 0.006;
+      this.pitch = THREE.MathUtils.clamp(this.pitch + dy * 0.004, -0.15, 1.1);
       this._lastX = e.clientX;
       this._lastY = e.clientY;
+      this._lastLook = performance.now();
     });
     dom.addEventListener(
       'wheel',
@@ -156,6 +167,11 @@ export class Explore {
       },
       { passive: false }
     );
+  }
+
+  /** Mouse steers the camera: exploring, not at the chess board or the computer. */
+  _canLook() {
+    return this.active && !this.chess?.seated && !this.seats?.terminal.open;
   }
 
   _onF() {
@@ -217,6 +233,8 @@ export class Explore {
 
   update(dt) {
     this.chess?.update(dt);
+    // The chess board and the computer need a free cursor.
+    if (this._dom && document.pointerLockElement === this._dom && !this._canLook()) document.exitPointerLock();
     this.game.arena.floor?.update(this.active && !this.chess?.seated && !this.seats?.terminal.open ? this.game.players[this.game.localSide].walk?.pos : null);
     if (!this.active) return;
     const g = this.game;
@@ -249,6 +267,12 @@ export class Explore {
       w.yaw += wrapAngle(target - w.yaw) * Math.min(1, dt * TURN);
     }
     w.speed += (speed - w.speed) * Math.min(1, dt * 8);
+    // Like most open-world games: walking forward, the camera swings in behind you unless
+    // you've just moved it yourself.
+    if (moving && f > 0 && performance.now() - this._lastLook > 1200) {
+      const behind = w.yaw + Math.PI;
+      this.yaw += wrapAngle(behind - this.yaw) * Math.min(1, dt * 1.6 * (w.speed / WALK));
+    }
     w.pos.x += this._move.x * w.speed * dt;
     w.pos.z += this._move.z * w.speed * dt;
     this.collide(w.pos);
@@ -355,7 +379,7 @@ export class Explore {
     const cp = Math.cos(this.pitch);
     const want = new THREE.Vector3(
       pos.x + Math.sin(this.yaw) * this.dist * cp,
-      lookY + Math.sin(this.pitch) * this.dist,
+      Math.max(0.35, lookY + Math.sin(this.pitch) * this.dist),
       pos.z + Math.cos(this.yaw) * this.dist * cp
     );
     // Don't let the camera leave the building: pull it in along the view ray.
