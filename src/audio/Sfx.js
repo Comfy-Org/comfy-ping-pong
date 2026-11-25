@@ -93,11 +93,13 @@ export class Sfx {
    * Play one random cut of a recorded clip. Returns false if it hasn't loaded yet.
    * @param pos world position ({x, y, z}) or null for a sound at the listener
    */
-  _play(name, { pos = null, gain = 1, rate = 1, wet = 0.12 } = {}) {
+  _play(name, { pos = null, gain = 1, rate = 1, wet = 0.12, near = 1.6, falloff = null, muffled = false } = {}) {
     const list = this.clips[name];
     if (!list?.length) return false;
     if (!this._on) return true;
     const ctx = this.ctx;
+    // Too far away to hear at all: don't play it.
+    if (pos && falloff && this._dist(pos) > falloff.max) return true;
     let i = Math.floor(Math.random() * list.length);
     if (list.length > 1 && i === this._last[name]) i = (i + 1) % list.length;
     this._last[name] = i;
@@ -108,19 +110,28 @@ export class Sfx {
     g.gain.value = gain * (0.88 + Math.random() * 0.24);
     src.connect(g);
     let out = g;
+    if (muffled) {
+      // Through a wall: duller and quieter.
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 700;
+      g.gain.value *= 0.5;
+      g.connect(lp);
+      out = lp;
+    }
     if (pos) {
       const p = ctx.createPanner();
       p.panningModel = 'HRTF';
-      p.distanceModel = 'inverse';
-      p.refDistance = 1.6;
-      p.rolloffFactor = 1.1;
-      p.maxDistance = 60;
+      p.distanceModel = falloff ? 'exponential' : 'inverse';
+      p.refDistance = near;
+      p.rolloffFactor = falloff ? falloff.rolloff : 1.1;
+      p.maxDistance = falloff ? falloff.max : 60;
       if (p.positionX) {
         p.positionX.value = pos.x;
         p.positionY.value = pos.y ?? 0;
         p.positionZ.value = pos.z;
       } else p.setPosition(pos.x, pos.y ?? 0, pos.z);
-      g.connect(p);
+      out.connect(p);
       out = p;
     }
     out.connect(this.master);
@@ -166,10 +177,24 @@ export class Sfx {
    * One footstep.
    * @param surface 'wood' (game room), 'carpet' (desks, lounge, meeting rooms) or 'concrete' (kitchen)
    */
-  step(pos, speed = 1.4, surface = 'carpet') {
+  step(pos, speed = 1.4, surface = 'carpet', muffled = false) {
     const jog = Math.min(1, Math.max(0, (speed - 1.6) / 1.7));
     const gain = (surface === 'carpet' ? 0.33 : 0.27) * (0.75 + 0.45 * jog);
-    this._play(`steps_${surface}`, { pos: { x: pos.x, y: 0.05, z: pos.z }, gain, rate: 1 + 0.06 * jog, wet: 0.08 });
+    // Steep fall-off: your own steps (about 3 m from the camera) are clear, someone across
+    // the room is faint, and the far end of the office is silent.
+    this._play(`steps_${surface}`, {
+      pos: { x: pos.x, y: 0.05, z: pos.z }, gain, rate: 1 + 0.06 * jog, wet: 0.06,
+      near: 2.5, falloff: { rolloff: 1.8, max: 15 }, muffled,
+    });
+  }
+
+  /** Distance from the listener (the camera). */
+  _dist(pos) {
+    const L = this.ctx.listener;
+    const lx = L.positionX ? L.positionX.value : 0;
+    const ly = L.positionY ? L.positionY.value : 0;
+    const lz = L.positionZ ? L.positionZ.value : 0;
+    return Math.hypot(pos.x - lx, (pos.y ?? 0) - ly, pos.z - lz);
   }
 
   /** Generic hook for UI code (the work computer uses it for a filed group). */

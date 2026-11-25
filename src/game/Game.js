@@ -47,7 +47,14 @@ export class Game {
     this.ball = new Ball(this.scene);
     this.players = characters.map((def, side) => new Character(def, side));
     // Footsteps: the floor under each step decides the sound.
-    for (const p of this.players) p.onStep = (pos, speed) => this.sfx.step(pos, speed, surfaceAt(pos.x, pos.z));
+    // A step on the other side of the game room's walls from the camera sounds muffled.
+    for (const p of this.players) {
+      p.onStep = (pos, speed) => {
+        const cam = this.camera.position;
+        const inRoom = (x, z) => zoneAt(x, z)?.id === 'game';
+        this.sfx.step(pos, speed, surfaceAt(pos.x, pos.z), inRoom(pos.x, pos.z) !== inRoom(cam.x, cam.z));
+      };
+    }
     this.players.forEach((p) => p.addTo(this.scene));
 
     this.difficulty = difficulty;
