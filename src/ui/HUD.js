@@ -18,7 +18,7 @@ export class HUD {
         <span>G: aim assist</span><span>M: mute</span><span>C: narrator</span><span>T: TV sound</span><span>R: restart</span><span><b>F: walk away from the table</b></span><span>H: hide hints</span>
       </div>
       <div class="help explore-help">
-        <span>WASD / arrows: walk</span><span>Shift: jog</span><span>Drag: look around</span><span>Wheel: zoom</span>
+        <span>WASD / arrows: walk</span><span>Shift: jog</span><span>Click: mouse look (Esc frees the cursor)</span><span>Wheel: zoom</span>
         <span>F: interact</span><span>T: TV sound</span><span>Y: next clip</span><span>C: narrator</span><span>H: hide hints</span>
       </div>
       <div class="hints-tip">H: show controls</div>

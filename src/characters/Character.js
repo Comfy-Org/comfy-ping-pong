@@ -26,6 +26,23 @@ const _bq = new THREE.Quaternion();
 const _pq = new THREE.Quaternion();
 const UP = new THREE.Vector3(0, 1, 0);
 const UP_W = new THREE.Vector3(0, 1, 0);
+const _fwd = new THREE.Vector3();
+const _dir = new THREE.Vector3();
+const _cur = new THREE.Vector3();
+
+/** Turn `bone` (in world space) so the direction from it to `child` points along `dir`. */
+function alignBone(bone, child, dir) {
+  if (!bone || !child) return;
+  bone.getWorldPosition(_bp);
+  child.getWorldPosition(_ep);
+  _cur.subVectors(_ep, _bp);
+  if (_cur.lengthSq() < 1e-10) return;
+  _q.setFromUnitVectors(_cur.normalize(), dir.normalize());
+  bone.getWorldQuaternion(_bq).premultiply(_q);
+  bone.parent.getWorldQuaternion(_pq).invert();
+  bone.quaternion.copy(_pq.multiply(_bq));
+  bone.updateMatrixWorld(true);
+}
 const _IDENT = new THREE.Quaternion();
 const _axis = new THREE.Vector3();
 const _rq = new THREE.Quaternion();
@@ -143,7 +160,16 @@ export class Character {
     this.legs = Object.values(l).every(Boolean) ? l : null;
     // Optional extras for a more natural walk (feet stay level, shoulders counter the hips).
     this.feet = { l: find('LeftFoot'), r: find('RightFoot') };
+    this.toes = { l: find('LeftToeBase'), r: find('RightToeBase') };
     this.chest = find('Spine02');
+    // Standing measurements the walk cycle keeps to: ankle height and the foot's angle (body frame).
+    if (this.feet.l && this.toes.l) {
+      this.root.updateMatrixWorld(true);
+      const ank = this.root.worldToLocal(this.feet.l.getWorldPosition(new THREE.Vector3()));
+      const toe = this.root.worldToLocal(this.toes.l.getWorldPosition(new THREE.Vector3()));
+      this._ankleRestY = ank.y;
+      this._footDir = toe.sub(ank).normalize();
+    }
     // Hip height in the body's own frame (rest pose) — used to seat the character on a chair.
     if (this.legs) {
       this.root.updateMatrixWorld(true);
@@ -278,10 +304,9 @@ export class Character {
     const jog = THREE.MathUtils.clamp((w.speed - 1.6) / 1.7, 0, 1); // 0 walking → 1 jogging
     const amp = moving * (0.36 + 0.22 * jog); // hip swing (radians)
     const ph = w.phase;
-    // The body rises over the planted leg (twice per cycle) and shifts a touch toward it.
-    const bob = (Math.abs(Math.cos(ph)) - 0.6) * moving * (0.035 + 0.03 * jog);
+    // The body shifts a touch toward the planted leg (its height comes from planting the feet below).
     const side = Math.sin(ph) * 0.022 * moving * (1 - jog * 0.5);
-    this.root.position.set(w.pos.x + Math.cos(w.yaw) * side, bob, w.pos.z - Math.sin(w.yaw) * side);
+    this.root.position.set(w.pos.x + Math.cos(w.yaw) * side, 0, w.pos.z - Math.sin(w.yaw) * side);
     this.root.rotation.y = w.yaw;
     this.root.updateMatrixWorld(true);
 
@@ -297,23 +322,45 @@ export class Character {
 
     if (this.legs) {
       const L = this.legs;
+      const D = Math.PI / 180;
       // Pelvis turns with the forward leg; the chest turns back the other way.
       rotateBoneWorld(L.hips, UP_W, -Math.sin(ph) * 0.09 * moving);
-      const legSwing = (up, low, foot, sgn) => {
+      // Legs are posed with absolute angles from a normal gait (the rig's rest pose has bent
+      // knees, so adding to it looked stiff and crouched). Angles are in the body's forward plane.
+      _fwd.set(Math.sin(w.yaw), 0, Math.cos(w.yaw));
+      const legAngles = (sgn) => {
         const sw = Math.sin(ph) * sgn; // +1 = this leg forward
-        const vel = Math.cos(ph) * sgn; // > 0 while this leg swings forward (in the air)
-        const thigh = -sw * amp - 0.04 * moving; // a slight forward set of the hips
-        // Knee: big bend mid-swing to clear the floor, a small give as the heel lands.
-        const swingBend = Math.max(0, vel) ** 1.3 * (0.75 + 0.55 * jog) * moving;
-        const landBend = Math.max(0, sw) * 0.12 * moving;
-        const knee = swingBend + landBend;
-        rotateBoneWorld(up, _axis, thigh);
-        rotateBoneWorld(low, _axis, knee);
-        // Keep the sole near level; tip the toes down a little at push-off.
-        if (foot) rotateBoneWorld(foot, _axis, -(thigh + knee) * 0.85 + Math.max(0, -sw) * Math.max(0, -vel) * 0.35 * moving);
+        const vel = Math.cos(ph) * sgn; // > 0 while this leg swings forward (foot in the air)
+        const reach = 22 + 10 * jog; // degrees of hip swing either side
+        const thigh = (4 + reach * sw) * moving;
+        // Knee: nearly straight while planted, a small give as the heel lands,
+        // and a big bend early in the swing so the foot clears the floor.
+        const swingK = (58 + 32 * jog) * Math.max(0, vel) ** 1.2 * (0.7 + 0.3 * Math.max(0, -sw));
+        const loadK = 12 * Math.max(0, sw) * Math.max(0, -vel) * 1.6;
+        const knee = 4 + (swingK + loadK + 6 * jog) * moving;
+        // Push off: the heel lifts as the leg trails behind.
+        const toe = Math.max(0, -sw) * Math.max(0, -vel) * 30 * moving;
+        return { thigh: thigh * D, shin: (thigh - knee) * D, toe: toe * D };
       };
-      legSwing(L.lUp, L.lLow, this.feet?.l, 1);
-      legSwing(L.rUp, L.rLow, this.feet?.r, -1);
+      const poseLeg = (up, low, foot, toeBone, sgn) => {
+        const a = legAngles(sgn);
+        alignBone(up, low, _dir.copy(_fwd).multiplyScalar(Math.sin(a.thigh)).setY(-Math.cos(a.thigh)));
+        alignBone(low, foot, _dir.copy(_fwd).multiplyScalar(Math.sin(a.shin)).setY(-Math.cos(a.shin)));
+        // Foot: back to its standing angle, tipped onto the toes at push-off.
+        if (foot && toeBone && this._footDir) {
+          _dir.copy(this._footDir).applyAxisAngle(UP_W, w.yaw);
+          _dir.applyAxisAngle(_axis, a.toe);
+          alignBone(foot, toeBone, _dir);
+        }
+      };
+      poseLeg(L.lUp, L.lLow, this.feet?.l, this.toes?.l, 1);
+      poseLeg(L.rUp, L.rLow, this.feet?.r, this.toes?.r, -1);
+      // Plant the lower foot on the floor: this is what makes the body rise and fall naturally.
+      if (this.feet?.l && this.feet?.r && this._ankleRestY !== undefined) {
+        const low = Math.min(this.feet.l.getWorldPosition(_a).y, this.feet.r.getWorldPosition(_b).y);
+        this.root.position.y += this._ankleRestY - low;
+        this.root.updateMatrixWorld(true);
+      }
       if (this.bones) rotateBoneWorld(this.bones.spine, _axis, -0.05 * moving - 0.12 * jog); // lean into a jog
       if (this.chest) rotateBoneWorld(this.chest, UP_W, Math.sin(ph) * 0.12 * moving);
       // Standing still: breathe.

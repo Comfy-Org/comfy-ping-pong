@@ -33,7 +33,8 @@ Online, each player gets the character they picked if it's free (the relay falls
 The game opens in the office. Press **F** during a match to walk away from the table. The match pauses (a point in progress is
 replayed), and you can explore the office in third person:
 
-- **WASD / arrows** walk (relative to the camera) · **Shift** jog · **drag** to look around · **wheel** to zoom
+- **WASD / arrows** walk (relative to the camera) · **Shift** jog · **wheel** to zoom
+- **Camera:** click once and the mouse steers it, like most open-world games (Esc frees the cursor; dragging also works). Walking forward, it swings in behind you on its own.
 - Furniture and walls block you. Walk up to something and a prompt appears: **F** to interact.
 - Back at your end of the ping-pong table, **F** resumes the match.
 - The card table is marked *soon*.
