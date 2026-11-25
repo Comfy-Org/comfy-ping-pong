@@ -385,7 +385,7 @@
    0,
    -9.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -416,7 +416,7 @@
    0,
    -11.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -447,7 +447,7 @@
    0,
    -9.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -478,7 +478,7 @@
    0,
    -11.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -509,7 +509,7 @@
    0,
    -9.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -540,7 +540,7 @@
    0,
    -11.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -571,7 +571,7 @@
    0,
    -9.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -602,7 +602,7 @@
    0,
    -11.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -633,7 +633,7 @@
    0,
    -9.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -664,7 +664,7 @@
    0,
    -11.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -695,7 +695,7 @@
    0,
    -9.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -726,7 +726,7 @@
    0,
    -11.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -757,7 +757,7 @@
    0,
    -13.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -788,7 +788,7 @@
    0,
    -15.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -819,7 +819,7 @@
    0,
    -13.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -850,7 +850,7 @@
    0,
    -15.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -881,7 +881,7 @@
    0,
    -13.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -912,7 +912,7 @@
    0,
    -15.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -943,7 +943,7 @@
    0,
    -13.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -974,7 +974,7 @@
    0,
    -15.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -1005,7 +1005,7 @@
    0,
    -13.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -1036,7 +1036,7 @@
    0,
    -15.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -1067,7 +1067,7 @@
    0,
    -13.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -1098,7 +1098,7 @@
    0,
    -15.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -1129,7 +1129,7 @@
    0,
    -17.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -1160,7 +1160,7 @@
    0,
    -19.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -1191,7 +1191,7 @@
    0,
    -17.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
@@ -1222,7 +1222,7 @@
    0,
    -19.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {
@@ -1253,199 +1253,13 @@
    0,
    -17.3
   ],
-  "rotY": 0,
+  "rotY": 180,
   "zone": "desks"
  },
  {
   "file": "standing_desk.glb",
   "position": [
    -0.4,
-   0,
-   -19
-  ],
-  "rotY": 180,
-  "zone": "desks"
- },
- {
-  "file": "monitor_white.glb",
-  "position": [
-   -0.4,
-   0.74,
-   -18.72
-  ],
-  "rotY": 180,
-  "zone": "desks",
-  "castShadow": false
- },
- {
-  "file": "office_chair_mesh.glb",
-  "position": [
-   -0.4,
-   0,
-   -19.9
-  ],
-  "rotY": 180,
-  "zone": "desks"
- },
- {
-  "file": "standing_desk.glb",
-  "position": [
-   1.2,
-   0,
-   -18.2
-  ],
-  "rotY": 0,
-  "zone": "desks"
- },
- {
-  "file": "monitor_white.glb",
-  "position": [
-   1.2,
-   0.74,
-   -18.48
-  ],
-  "rotY": 0,
-  "zone": "desks",
-  "castShadow": false
- },
- {
-  "file": "office_chair_mesh.glb",
-  "position": [
-   1.2,
-   0,
-   -17.3
-  ],
-  "rotY": 0,
-  "zone": "desks"
- },
- {
-  "file": "standing_desk.glb",
-  "position": [
-   1.2,
-   0,
-   -19
-  ],
-  "rotY": 180,
-  "zone": "desks"
- },
- {
-  "file": "monitor_black.glb",
-  "position": [
-   1.2,
-   0.74,
-   -18.72
-  ],
-  "rotY": 180,
-  "zone": "desks",
-  "castShadow": false
- },
- {
-  "file": "office_chair_mesh.glb",
-  "position": [
-   1.2,
-   0,
-   -19.9
-  ],
-  "rotY": 180,
-  "zone": "desks"
- },
- {
-  "file": "standing_desk.glb",
-  "position": [
-   2.8,
-   0,
-   -18.2
-  ],
-  "rotY": 0,
-  "zone": "desks"
- },
- {
-  "file": "monitor_black.glb",
-  "position": [
-   2.8,
-   0.74,
-   -18.48
-  ],
-  "rotY": 0,
-  "zone": "desks",
-  "castShadow": false
- },
- {
-  "file": "office_chair_mesh.glb",
-  "position": [
-   2.8,
-   0,
-   -17.3
-  ],
-  "rotY": 0,
-  "zone": "desks"
- },
- {
-  "file": "standing_desk.glb",
-  "position": [
-   2.8,
-   0,
-   -19
-  ],
-  "rotY": 180,
-  "zone": "desks"
- },
- {
-  "file": "monitor_black.glb",
-  "position": [
-   2.8,
-   0.74,
-   -18.72
-  ],
-  "rotY": 180,
-  "zone": "desks",
-  "castShadow": false
- },
- {
-  "file": "office_chair_mesh.glb",
-  "position": [
-   2.8,
-   0,
-   -19.9
-  ],
-  "rotY": 180,
-  "zone": "desks"
- },
- {
-  "file": "standing_desk.glb",
-  "position": [
-   4.4,
-   0,
-   -18.2
-  ],
-  "rotY": 0,
-  "zone": "desks"
- },
- {
-  "file": "monitor_black.glb",
-  "position": [
-   4.4,
-   0.74,
-   -18.48
-  ],
-  "rotY": 0,
-  "zone": "desks",
-  "castShadow": false
- },
- {
-  "file": "office_chair_mesh.glb",
-  "position": [
-   4.4,
-   0,
-   -17.3
-  ],
-  "rotY": 0,
-  "zone": "desks"
- },
- {
-  "file": "standing_desk.glb",
-  "position": [
-   4.4,
    0,
    -19
   ],
@@ -1455,6 +1269,192 @@
  {
   "file": "monitor_white.glb",
   "position": [
+   -0.4,
+   0.74,
+   -18.72
+  ],
+  "rotY": 180,
+  "zone": "desks",
+  "castShadow": false
+ },
+ {
+  "file": "office_chair_mesh.glb",
+  "position": [
+   -0.4,
+   0,
+   -19.9
+  ],
+  "rotY": 0,
+  "zone": "desks"
+ },
+ {
+  "file": "standing_desk.glb",
+  "position": [
+   1.2,
+   0,
+   -18.2
+  ],
+  "rotY": 0,
+  "zone": "desks"
+ },
+ {
+  "file": "monitor_white.glb",
+  "position": [
+   1.2,
+   0.74,
+   -18.48
+  ],
+  "rotY": 0,
+  "zone": "desks",
+  "castShadow": false
+ },
+ {
+  "file": "office_chair_mesh.glb",
+  "position": [
+   1.2,
+   0,
+   -17.3
+  ],
+  "rotY": 180,
+  "zone": "desks"
+ },
+ {
+  "file": "standing_desk.glb",
+  "position": [
+   1.2,
+   0,
+   -19
+  ],
+  "rotY": 180,
+  "zone": "desks"
+ },
+ {
+  "file": "monitor_black.glb",
+  "position": [
+   1.2,
+   0.74,
+   -18.72
+  ],
+  "rotY": 180,
+  "zone": "desks",
+  "castShadow": false
+ },
+ {
+  "file": "office_chair_mesh.glb",
+  "position": [
+   1.2,
+   0,
+   -19.9
+  ],
+  "rotY": 0,
+  "zone": "desks"
+ },
+ {
+  "file": "standing_desk.glb",
+  "position": [
+   2.8,
+   0,
+   -18.2
+  ],
+  "rotY": 0,
+  "zone": "desks"
+ },
+ {
+  "file": "monitor_black.glb",
+  "position": [
+   2.8,
+   0.74,
+   -18.48
+  ],
+  "rotY": 0,
+  "zone": "desks",
+  "castShadow": false
+ },
+ {
+  "file": "office_chair_mesh.glb",
+  "position": [
+   2.8,
+   0,
+   -17.3
+  ],
+  "rotY": 180,
+  "zone": "desks"
+ },
+ {
+  "file": "standing_desk.glb",
+  "position": [
+   2.8,
+   0,
+   -19
+  ],
+  "rotY": 180,
+  "zone": "desks"
+ },
+ {
+  "file": "monitor_black.glb",
+  "position": [
+   2.8,
+   0.74,
+   -18.72
+  ],
+  "rotY": 180,
+  "zone": "desks",
+  "castShadow": false
+ },
+ {
+  "file": "office_chair_mesh.glb",
+  "position": [
+   2.8,
+   0,
+   -19.9
+  ],
+  "rotY": 0,
+  "zone": "desks"
+ },
+ {
+  "file": "standing_desk.glb",
+  "position": [
+   4.4,
+   0,
+   -18.2
+  ],
+  "rotY": 0,
+  "zone": "desks"
+ },
+ {
+  "file": "monitor_black.glb",
+  "position": [
+   4.4,
+   0.74,
+   -18.48
+  ],
+  "rotY": 0,
+  "zone": "desks",
+  "castShadow": false
+ },
+ {
+  "file": "office_chair_mesh.glb",
+  "position": [
+   4.4,
+   0,
+   -17.3
+  ],
+  "rotY": 180,
+  "zone": "desks"
+ },
+ {
+  "file": "standing_desk.glb",
+  "position": [
+   4.4,
+   0,
+   -19
+  ],
+  "rotY": 180,
+  "zone": "desks"
+ },
+ {
+  "file": "monitor_white.glb",
+  "position": [
    4.4,
    0.74,
    -18.72
@@ -1470,7 +1470,7 @@
    0,
    -19.9
   ],
-  "rotY": 180,
+  "rotY": 0,
   "zone": "desks"
  },
  {

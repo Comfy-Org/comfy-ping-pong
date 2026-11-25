@@ -73,8 +73,10 @@ export async function loadOffice(scene, arena, layout) {
       const obj = entry.used ? gltf.scene.clone(true) : gltf.scene;
       entry.used = true;
 
-      if (item.position) obj.position.fromArray(item.position);
-      if (item.rotY) obj.rotation.y = THREE.MathUtils.degToRad(item.rotY);
+      // Always set both: later copies are cloned from the first one, which may already have
+      // been moved and turned (a rotY of 0 used to inherit the first copy's turn).
+      obj.position.fromArray(item.position ?? [0, 0, 0]);
+      obj.rotation.set(0, THREE.MathUtils.degToRad(item.rotY ?? 0), 0);
       const castShadow = item.castShadow ?? item.file !== 'room_shell.glb'; // the ceiling would shadow everything
       obj.traverse((o) => {
         if (!o.isMesh) return;
