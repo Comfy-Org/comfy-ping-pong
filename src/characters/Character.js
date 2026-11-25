@@ -299,6 +299,10 @@ export class Character {
     // Longer strides at higher speed: ~1.5 m per cycle (two steps) walking, ~2.1 m jogging.
     const stride = 1.2 + 0.27 * w.speed;
     w.phase += (w.speed * Math.PI * 2 * dt) / stride;
+    // A heel lands each time a leg reaches the front of its swing (phase π/2, 3π/2, ...).
+    const stepK = Math.floor((w.phase - Math.PI / 2) / Math.PI);
+    if (w._stepK !== undefined && stepK !== w._stepK && w.speed > 0.5) this.onStep?.(w.pos, w.speed);
+    w._stepK = stepK;
     w.t = (w.t ?? 0) + dt;
     const moving = THREE.MathUtils.clamp(w.speed / 1.5, 0, 1); // 0 standing → 1 walking
     const jog = THREE.MathUtils.clamp((w.speed - 1.6) / 1.7, 0, 1); // 0 walking → 1 jogging
