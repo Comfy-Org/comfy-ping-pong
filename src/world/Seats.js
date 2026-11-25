@@ -10,10 +10,9 @@ import { Terminal } from '../computer/Terminal.js';
  * into the screen and starts the work program (src/computer/Terminal.js).
  */
 
-/** Seatable props, and which way their seat faces (most props face +Z; the desk chair faces -Z). */
+/** Seatable props (their seats face +Z; `flip` is for a model whose seat faces -Z). */
 const SEATABLE = [
-  { re: /office_chair_mesh/, flip: true },
-  { re: /cafe_chair|dining_chair_black|shop_stool/ },
+  { re: /office_chair_mesh|cafe_chair|dining_chair_black|shop_stool/ },
   { re: /^sofa\.glb|sectional_sofa|green_booth|booth_bench_grey/, bench: true },
   { re: /lounge_chair|beanbag/ },
 ];
@@ -39,11 +38,16 @@ export class Seats {
       if (!kind) continue;
       if (skip.some((s) => Math.hypot(s.x - obj.position.x, s.z - obj.position.z) < 0.3)) continue;
       // The prop's footprint in its own frame.
-      const rot = obj.rotation.y;
-      obj.rotation.y = 0;
+      // (Read the heading from the matrix: the Euler angles can come back as an equivalent
+      // x/z-flipped triplet, where .rotation.y alone is wrong.)
+      obj.updateMatrixWorld(true);
+      const m = obj.matrixWorld.elements;
+      const rot = Math.atan2(m[8], m[10]);
+      const q = obj.quaternion.clone();
+      obj.rotation.set(0, 0, 0);
       obj.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(obj);
-      obj.rotation.y = rot;
+      obj.quaternion.copy(q);
       obj.updateMatrixWorld(true);
       const width = box.max.x - box.min.x;
       const depth = box.max.z - box.min.z;
