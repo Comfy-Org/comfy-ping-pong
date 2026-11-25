@@ -31,7 +31,8 @@ for (const rz of [-10.6, -14.6, -18.6]) {
       const rot = side > 0 ? 0 : 180; // desk and screen face the person, who faces the spine
       add('desks', 'standing_desk.glb', x, 0, z, rot);
       add('desks', (i + (side > 0 ? 0 : 1)) % 3 ? 'monitor_black.glb' : 'monitor_white.glb', x, 0.74, rz + side * 0.12, rot, { castShadow: false });
-      add('desks', 'office_chair_mesh.glb', x, 0, rz + side * 1.3, 180 - rot);
+      // office_chair_mesh.glb's seat faces -Z (unlike the other props), so it shares the desk's rotation to face it.
+      add('desks', 'office_chair_mesh.glb', x, 0, rz + side * 1.3, rot);
     }
   }
 }
