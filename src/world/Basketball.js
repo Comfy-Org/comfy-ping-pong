@@ -368,8 +368,7 @@ export class Basketball {
     const pts = this.timeLeft <= BONUS_AT ? 3 : 2;
     this.score += pts;
     this.nets[rim].swish = 1;
-    if (clean) this.game.sfx.swish?.();
-    else this.game.sfx.point?.(true);
+    this.game.sfx.swish?.(clean);
     this._drawScoreboard();
     this.game.emit('hoopsScore', { points: pts, score: this.score, clean });
   }
@@ -393,9 +392,20 @@ export class Basketball {
     this.held = null;
   }
 
-  /** The point on the hoops' plane that the mouse is aiming at. */
+  /** The point on the hoops' plane under the mouse (machine frame), kept inside the cage. */
   _target() {
-    return new THREE.Vector3(this.aim.x * 0.5, RIMS[0].y + 0.02 + this.aim.y * 0.32, RIMS[0].z);
+    const cam = this.game.camera;
+    this._ray ??= new THREE.Raycaster();
+    this._ray.setFromCamera(this.aim, cam);
+    // Ray into the machine frame, then meet the vertical plane through the rims.
+    const o = this.frame.worldToLocal(this._ray.ray.origin.clone());
+    const d = this._ray.ray.direction.clone().applyQuaternion(this.frame.quaternion.clone().invert());
+    const t = Math.abs(d.z) > 1e-4 ? (RIMS[0].z - o.z) / d.z : 0;
+    const p = o.addScaledVector(d, Math.max(0, t));
+    p.x = THREE.MathUtils.clamp(p.x, -this.wallX + BALL_R, this.wallX - BALL_R);
+    p.y = THREE.MathUtils.clamp(p.y, 1.2, this.ceilY - BALL_R);
+    p.z = RIMS[0].z;
+    return p;
   }
 
   _shoot() {
@@ -420,7 +430,7 @@ export class Basketball {
     b.v.set((dx / D) * horiz, speed * Math.sin(ANGLE), (dz / D) * horiz);
     b.state = 'fly';
     b.shot = { touched: false, scored: false };
-    this.game.sfx.hit?.(0.3);
+    this.game.sfx.shoot?.();
   }
 
   _step(b, dt) {
@@ -488,7 +498,7 @@ export class Basketball {
       p.y = fy;
       if (v.y < -0.35) {
         // A real bounce.
-        if (v.y < -1.2) this.game.sfx.floor?.();
+        if (v.y < -1.2) this.game.sfx.ballBounce?.(-v.y);
         v.y = -v.y * 0.38;
         v.x *= 0.85;
         v.z *= 0.85;
@@ -575,8 +585,9 @@ export class Basketball {
   }
 
   updateCamera(dt) {
-    const want = this.toWorld(CAM.clone().add(new THREE.Vector3(this.aim.x * 0.08, 0, 0)));
-    const look = this.toWorld(LOOK.clone().add(new THREE.Vector3(this.aim.x * 0.2, this.aim.y * 0.1, 0)));
+    // A steady view, so the aim ring stays right under the cursor.
+    const want = this.toWorld(CAM);
+    const look = this.toWorld(LOOK);
     const a = Math.min(1, dt * 6);
     this._camPos.lerp(want, a);
     this._camLook.lerp(look, a);
