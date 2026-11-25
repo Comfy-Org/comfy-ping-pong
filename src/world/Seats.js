@@ -81,14 +81,40 @@ export class Seats {
 
   /** Spots for Explore's F prompt. */
   spots() {
+    for (const seat of this.list) seat.stand = this._standSpot(seat);
+    // Boxed-in seats (no open spot right next to them) answer from a little further away.
     return this.list.map((seat) => ({
       id: 'seat',
       label: seat.monitor ? 'Use the computer' : 'Sit down',
-      x: seat.x + seat.fx * 0.45,
-      z: seat.z + seat.fz * 0.45,
-      r: 0.6,
+      x: seat.stand.open ? seat.stand.x : seat.x,
+      z: seat.stand.open ? seat.stand.z : seat.z,
+      r: seat.stand.open ? 0.65 : 1.15,
       seat,
     }));
+  }
+
+  /**
+   * Where you stand to sit down (and where you end up when you get up): in front of the seat
+   * if there's room, otherwise beside or behind it. (A desk chair tucked in at its desk has
+   * the desk in front of it, so you walk up from the aisle behind it.)
+   */
+  _standSpot(seat) {
+    const ex = this.explore;
+    const R = 0.26;
+    const rx = Math.cos(seat.yaw);
+    const rz = -Math.sin(seat.yaw);
+    const free = (x, z) =>
+      (ex.rects ?? []).some((r) => x >= r.minX && x <= r.maxX && z >= r.minZ && z <= r.maxZ) &&
+      !(ex.colliders ?? []).some((c) => x > c.minX - R && x < c.maxX + R && z > c.minZ - R && z < c.maxZ + R);
+    const tries = [
+      [seat.fx * 0.6, seat.fz * 0.6],
+      [rx * 0.65, rz * 0.65],
+      [-rx * 0.65, -rz * 0.65],
+      [-seat.fx * 0.7, -seat.fz * 0.7],
+      [seat.fx * 0.45, seat.fz * 0.45],
+    ];
+    for (const [dx, dz] of tries) if (free(seat.x + dx, seat.z + dz)) return { x: seat.x + dx, z: seat.z + dz, open: true };
+    return { x: seat.x + seat.fx * 0.7, z: seat.z + seat.fz * 0.7, open: false };
   }
 
   sit(seat) {
@@ -123,7 +149,8 @@ export class Seats {
     this.current = null;
     me.walk.sit = null;
     me.walk.reach = null;
-    me.walk.pos.set(seat.x + seat.fx * 0.55, 0, seat.z + seat.fz * 0.55);
+    const out = seat.stand ?? { x: seat.x + seat.fx * 0.55, z: seat.z + seat.fz * 0.55 };
+    me.walk.pos.set(out.x, 0, out.z);
     me.walk.yaw = seat.yaw;
     this.explore.yaw = seat.yaw + Math.PI; // camera behind you
     g.hud.el.classList.remove('seated');
