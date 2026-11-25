@@ -56,4 +56,44 @@ export class Sfx {
   point(won) {
     this._blip(won ? 660 : 300, 0.25, { type: 'triangle', gain: 0.15, slide: won ? 1.5 : 0.6 });
   }
+
+  /** Short filtered noise burst (net swish). */
+  _noise(dur, { gain = 0.15, freq = 3000, q = 0.8 } = {}) {
+    const ctx = this.ctx;
+    if (!ctx || this.muted || ctx.state !== 'running') return;
+    const t = ctx.currentTime;
+    const n = Math.floor(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const f = ctx.createBiquadFilter();
+    f.type = 'bandpass';
+    f.frequency.value = freq;
+    f.Q.value = q;
+    const g = ctx.createGain();
+    g.gain.value = gain;
+    src.connect(f).connect(g).connect(ctx.destination);
+    src.start(t);
+  }
+  /** Arcade hoops: a clean basket. */
+  swish() {
+    this._noise(0.28, { gain: 0.35, freq: 2600, q: 0.6 });
+    this._blip(990, 0.18, { type: 'triangle', gain: 0.08, slide: 1.4 });
+  }
+  /** Ball off the metal rim. */
+  rim(power = 0.5) {
+    this._blip(520, 0.12, { type: 'square', gain: 0.04 + power * 0.06, slide: 0.97 });
+    this._blip(1560, 0.08, { type: 'triangle', gain: 0.05 + power * 0.05, slide: 0.98 });
+  }
+  /** Ball off the backboard. */
+  board() {
+    this._blip(170, 0.09, { type: 'triangle', gain: 0.2, slide: 0.6 });
+  }
+  /** End of the round. */
+  buzzer() {
+    this._blip(150, 0.9, { type: 'sawtooth', gain: 0.12, slide: 0.98 });
+    this._blip(154, 0.9, { type: 'square', gain: 0.06, slide: 0.98 });
+  }
 }
