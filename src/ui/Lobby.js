@@ -101,14 +101,15 @@ export class Lobby {
     g.hud.message(`You're ${g.players[g.localSide].def.name}`, 'Walk with WASD · F at a table to play', 3);
   }
 
-  connect(code) {
+  connect(code, tries = 0) {
     history.replaceState(null, '', `?room=${code}`);
     this._panel(`<p>Connecting to room <b>${code}</b>…</p>`);
     // Online play is Matt vs Deep for now (both ends need the same two characters).
     const net = new NetSession(code, this.pick === 'deep' ? 1 : 0);
     let started = false;
     const start = (side, sendStart) => {
-      started = true;
+      if (started) return;
+      started = this._started = true;
       this.hide();
       this.game.setDemo(false);
       this.game.goOnline(net, side);
@@ -123,8 +124,10 @@ export class Lobby {
       else this._waiting(code, m.side);
     });
     net.on('peer-joined', () => !started && start(net.side, true));
-    net.on('full', () => this.showMenu(`Room ${code} already has two players.`));
-    net.on('close', () => !started && this.showMenu(`Couldn't connect to room ${code}.`));
+    // Right after a reload the old connection can still hold our seat for a moment: retry.
+    net.on('full', () => (tries < 4 ? setTimeout(() => this.connect(code, tries + 1), 800) : this.showMenu(`Room ${code} already has two players.`)));
+    net.on('close', () => !started && !net.full && this.showMenu(`Couldn't connect to room ${code}.`));
+    net.on('full', () => (net.full = true));
   }
 
   async _waiting(code, side) {
@@ -138,6 +141,7 @@ export class Lobby {
         if (origin) [base, shared] = [origin, true];
       } catch {}
     }
+    if (this._started) return; // they joined while we looked up the link
     const link = `${base}${location.pathname}?room=${code}`;
     const you = this.game.players[side].def.name;
     this._panel(`

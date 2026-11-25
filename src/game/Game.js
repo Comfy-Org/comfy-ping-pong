@@ -356,16 +356,41 @@ export class Game {
     });
     net.on('chess', (m) => this.explore.chess?.receive(m));
     net.on('away', (m) => this._setAway(remote, m.on));
-    net.on('peer-left', () => this.goOffline('Opponent left'));
+    net.on('peer-left', () => this._peerLeft());
+    // A reload can replace their connection without a 'peer-left' first.
+    net.on('peer-joined', () => this.net === net && this._welcomeBack());
     net.on('close', () => this.net && this.goOffline('Connection lost'));
     this._updateStatus();
   }
 
   /** Drop back to single player; the AI takes over the opponent's side. */
-  goOffline(reason = '') {
+  /**
+   * The opponent dropped (closed the tab, reloaded, lost Wi-Fi). Play on against the computer,
+   * but stay in the room: if they come back (or reload), pick the online game up again.
+   */
+  _peerLeft() {
+    const net = this.net;
+    this.goOffline('Opponent left', { keepRoom: true });
+    net.handlers = {}; // the online-game handlers go until they're back
+    net.on('peer-joined', () => {
+      this.goOnline(net, this.localSide);
+      this._welcomeBack();
+    });
+    net.on('close', () => this.hud.message('Connection lost', '', 2.5));
+  }
+
+  /** The opponent (re)joined mid-session: they arrive as a fresh client waiting for 'start' (see Lobby.connect). */
+  _welcomeBack() {
+    this.net.send({ t: 'start' });
+    this.resetMatch();
+    this.net.send({ t: 'away', on: !!this.away[this.localSide] });
+    this.hud.message(`${this.players[1 - this.localSide].def.name} is back`, '', 2);
+  }
+
+  goOffline(reason = '', { keepRoom = false } = {}) {
     const net = this.net;
     this.net = null;
-    net?.close();
+    if (!keepRoom) net?.close();
     const remote = 1 - this.localSide;
     this.controllers[remote] = new AIController(remote, this.difficulty);
     if (this.away[remote]) {
