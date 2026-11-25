@@ -3,6 +3,7 @@ import { TABLE } from '../config.js';
 import { buildCardTable } from './Props.js';
 import { ChessTable } from '../chess/ChessTable.js';
 import { zoneAt } from './Floor.js';
+import { Seats } from './Seats.js';
 
 /**
  * Free-roam ("explore") mode: walk your avatar around the office.
@@ -110,8 +111,9 @@ export class Explore {
       scene.add(set);
       this.spots.push({ id: 'cards', label: 'Cards', x: back[1].x, z: back[1].z, r: 1.3, soon: true });
     }
-    const sofa = props.find((p) => p.file === 'sofa.glb');
-    if (sofa) this.spots.push({ id: 'sofa', label: 'Sit on the sofa', x: sofa.obj.position.x, z: sofa.obj.position.z - 0.6, r: 1.1, soon: true });
+    // Every chair, stool, sofa, booth and beanbag (the chess chairs belong to chess).
+    this.seats = new Seats(this.game, this, props, this.chess?.seats ?? []);
+    this.spots.push(...this.seats.spots());
   }
 
   /** The place you stand to play, for each side. */
@@ -163,10 +165,12 @@ export class Explore {
       return;
     }
     if (this.chess?.seated) return this.chess.stand();
+    if (this.seats?.current) return this.seats.stand();
     const spot = this._nearSpot;
     if (!spot) return;
     if (spot.id === 'pingpong') this.exit();
     else if (spot.id === 'chess' && this.chess) this.chess.sit();
+    else if (spot.id === 'seat') this.seats.sit(spot.seat);
     else {
       if (spot.locked) g.hud.message('Locked', 'Nice try', 1.5);
       else if (!g.narrator?.on) g.hud.message(spot.label, spot.soon ? 'Coming soon — we’re building this next' : '', 1.8);
@@ -213,7 +217,7 @@ export class Explore {
 
   update(dt) {
     this.chess?.update(dt);
-    this.game.arena.floor?.update(this.active && !this.chess?.seated ? this.game.players[this.game.localSide].walk?.pos : null);
+    this.game.arena.floor?.update(this.active && !this.chess?.seated && !this.seats?.terminal.open ? this.game.players[this.game.localSide].walk?.pos : null);
     if (!this.active) return;
     const g = this.game;
     const me = g.players[g.localSide];
@@ -221,6 +225,11 @@ export class Explore {
     if (this.chess?.seated) {
       this._nearSpot = null;
       this.chess.updateCamera(dt);
+      return;
+    }
+    if (this.seats?.current) {
+      this._nearSpot = null;
+      this.seats.update(dt);
       return;
     }
 
@@ -340,13 +349,13 @@ export class Explore {
     g.hud.setPrompt(best ? `<kbd>F</kbd> ${best.label}${best.soon ? ' <em>soon</em>' : ''}` : '');
   }
 
-  _updateCamera(dt, pos) {
+  _updateCamera(dt, pos, lookY = 1.45) {
     const cam = this.game.camera;
-    const look = new THREE.Vector3(pos.x, 1.45, pos.z);
+    const look = new THREE.Vector3(pos.x, lookY, pos.z);
     const cp = Math.cos(this.pitch);
     const want = new THREE.Vector3(
       pos.x + Math.sin(this.yaw) * this.dist * cp,
-      1.45 + Math.sin(this.pitch) * this.dist,
+      lookY + Math.sin(this.pitch) * this.dist,
       pos.z + Math.cos(this.yaw) * this.dist * cp
     );
     // Don't let the camera leave the building: pull it in along the view ray.

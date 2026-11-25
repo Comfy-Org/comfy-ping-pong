@@ -15,17 +15,34 @@ export class HUD {
         <span>Mouse: paddle</span><span>Click / Space: serve</span><span>Swipe sideways: aim</span>
         <span>Hold button at contact: power</span><span>Swipe up / down through the ball: topspin / backspin</span>
         <span>E / Shift / right-click: super smash (meter full)</span><span>1 2 3: difficulty</span><span>P: AI vs AI</span>
-        <span>G: aim assist</span><span>M: mute</span><span>C: narrator</span><span>T: TV sound</span><span>R: restart</span><span><b>F: walk away from the table</b></span>
+        <span>G: aim assist</span><span>M: mute</span><span>C: narrator</span><span>T: TV sound</span><span>R: restart</span><span><b>F: walk away from the table</b></span><span>H: hide hints</span>
       </div>
       <div class="help explore-help">
         <span>WASD / arrows: walk</span><span>Shift: jog</span><span>Drag: look around</span><span>Wheel: zoom</span>
-        <span>F: interact</span><span>T: TV sound</span><span>Y: next clip</span><span>C: narrator</span>
+        <span>F: interact</span><span>T: TV sound</span><span>Y: next clip</span><span>C: narrator</span><span>H: hide hints</span>
       </div>
+      <div class="hints-tip">H: show controls</div>
       <div class="prompt"></div>
       <div class="status"></div>`;
     root.appendChild(this.el);
     this.$ = (s) => this.el.querySelector(s);
     this._msgTimer = 0;
+    // H hides the control hints everywhere (remembered between visits).
+    const setHints = (on) => {
+      document.body.classList.toggle('hints-off', !on);
+      try {
+        localStorage.setItem('hints', on ? '1' : '0');
+      } catch {}
+    };
+    let stored = null;
+    try {
+      stored = localStorage.getItem('hints');
+    } catch {}
+    setHints(stored !== '0');
+    window.addEventListener('keydown', (e) => {
+      if (e.target instanceof HTMLInputElement || e.code !== 'KeyH' || e.repeat) return;
+      setHints(document.body.classList.contains('hints-off'));
+    });
   }
 
   setScore(score, server) {

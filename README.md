@@ -36,7 +36,14 @@ replayed), and you can explore the office in third person:
 - **WASD / arrows** walk (relative to the camera) · **Shift** jog · **drag** to look around · **wheel** to zoom
 - Furniture and walls block you. Walk up to something and a prompt appears: **F** to interact.
 - Back at your end of the ping-pong table, **F** resumes the match.
-- The card table and the sofa are marked *soon*.
+- The card table is marked *soon*.
+- **Sit anywhere:** every chair, stool, sofa, booth and beanbag. Walk up and press **F**; any movement key, **F** or **Esc** stands you up.
+- **The computers:** sit at a desk and the camera flies into the screen. *Numeric Tending* by Pellucid Systems is an original
+  game-within-the-game: digits that feel off move in one of four ways (HUSH breathes, SPARK flickers, KNOT trembles,
+  DRIFT sways). Drag a box around a cluster and send it to its bin (click, or **1–4**). Fill all four bins to finish
+  the file. Code: `src/computer/Terminal.js`, seating: `src/world/Seats.js`.
+- **H** hides or shows the control hints (remembered).
+- The paddle stays at the table: it only appears while you're playing ping pong.
 
 ### The office floor
 
