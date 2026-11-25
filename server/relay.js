@@ -21,22 +21,25 @@ export function attachRelay(httpServer, path = '/ws') {
     let room = rooms.get(code);
     if (!room) rooms.set(code, (room = [null, null]));
     const pref = want === '1' ? 1 : 0;
-    const side = !room[pref] ? pref : !room[1 - pref] ? 1 - pref : -1;
+    // A seat whose connection is closing (the player just reloaded) counts as free.
+    const free = (i) => !room[i] || room[i].readyState !== 1;
+    const side = free(pref) ? pref : free(1 - pref) ? 1 - pref : -1;
     if (side < 0) {
       ws.send(JSON.stringify({ t: 'full' }));
       return ws.close(4001, 'room full');
     }
     room[side] = ws;
-    const other = () => room[1 - side];
+    const other = () => (room[1 - side]?.readyState === 1 ? room[1 - side] : null);
     ws.send(JSON.stringify({ t: 'welcome', side, peer: !!other() }));
     other()?.send(JSON.stringify({ t: 'peer-joined' }));
 
     ws.on('message', (data) => {
-      const o = other();
-      if (o && o.readyState === 1) o.send(data.toString());
+      other()?.send(data.toString());
     });
     ws.on('close', () => {
-      if (room[side] === ws) room[side] = null;
+      // Replaced by a newer connection (a reload): that one already said hello, so stay quiet.
+      if (room[side] !== ws) return;
+      room[side] = null;
       other()?.send(JSON.stringify({ t: 'peer-left' }));
       if (!room[0] && !room[1]) rooms.delete(code);
     });
