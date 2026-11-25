@@ -93,7 +93,7 @@ export class Sfx {
    * Play one random cut of a recorded clip. Returns false if it hasn't loaded yet.
    * @param pos world position ({x, y, z}) or null for a sound at the listener
    */
-  _play(name, { pos = null, gain = 1, rate = 1, wet = 0.12, near = 1.6, falloff = null, muffled = false } = {}) {
+  _play(name, { pos = null, gain = 1, rate = 1, wet = 0.12, near = 1.6, falloff = null, muffled = false, dull = false } = {}) {
     const list = this.clips[name];
     if (!list?.length) return false;
     if (!this._on) return true;
@@ -110,13 +110,22 @@ export class Sfx {
     g.gain.value = gain * (0.88 + Math.random() * 0.24);
     src.connect(g);
     let out = g;
+    if (dull) {
+      // Soft pile soaks up the click of a sneaker: keep the thud, roll off the top.
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 1600;
+      lp.Q.value = 0.5;
+      out.connect(lp);
+      out = lp;
+    }
     if (muffled) {
       // Through a wall: duller and quieter.
       const lp = ctx.createBiquadFilter();
       lp.type = 'lowpass';
       lp.frequency.value = 700;
       g.gain.value *= 0.5;
-      g.connect(lp);
+      out.connect(lp);
       out = lp;
     }
     if (pos) {
@@ -184,7 +193,7 @@ export class Sfx {
     // the room is faint, and the far end of the office is silent.
     this._play(`steps_${surface}`, {
       pos: { x: pos.x, y: 0.05, z: pos.z }, gain, rate: 1 + 0.06 * jog, wet: 0.06,
-      near: 2.5, falloff: { rolloff: 1.8, max: 15 }, muffled,
+      near: 2.5, falloff: { rolloff: 1.8, max: 15 }, muffled, dull: surface === 'carpet',
     });
   }
 
