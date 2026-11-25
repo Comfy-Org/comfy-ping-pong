@@ -214,6 +214,10 @@ export class Narrator {
       else if (id === 'sofa') this.say('sofa_soon', { force: true });
       else if (id === 'door') this.say('door', { force: true });
     });
+    // The computers' work program.
+    let usedPC = false;
+    g.on('computerOn', () => !usedPC && (usedPC = true) && this.say('pc_sit', { force: true }));
+    g.on('fileComplete', () => this.say('file_done', { force: true }));
     // First visit to each part of the floor.
     g.on('zoneEnter', ({ id, first }) => first && this.say(`zone_${id}`));
     g.on('chessQuit', () => this.say('chess_quit', { force: true }));

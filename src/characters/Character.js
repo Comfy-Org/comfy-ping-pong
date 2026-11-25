@@ -25,6 +25,7 @@ const _q = new THREE.Quaternion();
 const _bq = new THREE.Quaternion();
 const _pq = new THREE.Quaternion();
 const UP = new THREE.Vector3(0, 1, 0);
+const UP_W = new THREE.Vector3(0, 1, 0);
 const _IDENT = new THREE.Quaternion();
 const _axis = new THREE.Vector3();
 const _rq = new THREE.Quaternion();
@@ -140,6 +141,9 @@ export class Character {
     if (!this.bones) console.warn(`[${this.def.name}] arm bones not found; IK disabled`);
     const l = Object.fromEntries(Object.entries(LEGS).map(([k, n]) => [k, find(n)]));
     this.legs = Object.values(l).every(Boolean) ? l : null;
+    // Optional extras for a more natural walk (feet stay level, shoulders counter the hips).
+    this.feet = { l: find('LeftFoot'), r: find('RightFoot') };
+    this.chest = find('Spine02');
     // Hip height in the body's own frame (rest pose) — used to seat the character on a chair.
     if (this.legs) {
       this.root.updateMatrixWorld(true);
@@ -264,10 +268,20 @@ export class Character {
       w.speed += (w.target.speed - w.speed) * a;
     }
     if (w.sit) return this._updateSit(dt);
-    // ~0.7 m per step → one full cycle (two steps) every 1.4 m.
-    w.phase += (w.speed * Math.PI * 2 * dt) / 1.4;
-    const amp = THREE.MathUtils.clamp(w.speed * 0.2, 0, 0.62);
-    this.root.position.set(w.pos.x, Math.abs(Math.cos(w.phase)) * amp * 0.06 - amp * 0.03, w.pos.z);
+    // Out of the match the paddle is put away.
+    this.paddle.group.visible = false;
+    // Longer strides at higher speed: ~1.5 m per cycle (two steps) walking, ~2.1 m jogging.
+    const stride = 1.2 + 0.27 * w.speed;
+    w.phase += (w.speed * Math.PI * 2 * dt) / stride;
+    w.t = (w.t ?? 0) + dt;
+    const moving = THREE.MathUtils.clamp(w.speed / 1.5, 0, 1); // 0 standing → 1 walking
+    const jog = THREE.MathUtils.clamp((w.speed - 1.6) / 1.7, 0, 1); // 0 walking → 1 jogging
+    const amp = moving * (0.36 + 0.22 * jog); // hip swing (radians)
+    const ph = w.phase;
+    // The body rises over the planted leg (twice per cycle) and shifts a touch toward it.
+    const bob = (Math.abs(Math.cos(ph)) - 0.6) * moving * (0.035 + 0.03 * jog);
+    const side = Math.sin(ph) * 0.022 * moving * (1 - jog * 0.5);
+    this.root.position.set(w.pos.x + Math.cos(w.yaw) * side, bob, w.pos.z - Math.sin(w.yaw) * side);
     this.root.rotation.y = w.yaw;
     this.root.updateMatrixWorld(true);
 
@@ -278,34 +292,46 @@ export class Character {
     }
     this.model.updateMatrixWorld(true);
     const s = this.def.height / 1.78;
+    _axis.set(1, 0, 0).transformDirection(this.model.matrixWorld); // the character's left
+    UP_W.set(0, 1, 0);
 
     if (this.legs) {
       const L = this.legs;
-      // Character's sideways axis in world space: rotating about it swings legs fore/aft.
-      _axis.set(1, 0, 0).transformDirection(this.model.matrixWorld);
-      const sw = Math.sin(w.phase);
-      // Thighs swing opposite each other; a negative angle about +X swings the foot forward (+Z).
-      rotateBoneWorld(L.lUp, _axis, -sw * amp);
-      rotateBoneWorld(L.rUp, _axis, sw * amp);
-      // Knees bend while the leg swings through (never backward).
-      rotateBoneWorld(L.lLow, _axis, Math.max(0, Math.cos(w.phase)) * amp * 1.4);
-      rotateBoneWorld(L.rLow, _axis, Math.max(0, -Math.cos(w.phase)) * amp * 1.4);
-      // A little forward lean when jogging.
-      if (this.bones) rotateBoneWorld(this.bones.spine, _axis, -amp * 0.12);
+      // Pelvis turns with the forward leg; the chest turns back the other way.
+      rotateBoneWorld(L.hips, UP_W, -Math.sin(ph) * 0.09 * moving);
+      const legSwing = (up, low, foot, sgn) => {
+        const sw = Math.sin(ph) * sgn; // +1 = this leg forward
+        const vel = Math.cos(ph) * sgn; // > 0 while this leg swings forward (in the air)
+        const thigh = -sw * amp - 0.04 * moving; // a slight forward set of the hips
+        // Knee: big bend mid-swing to clear the floor, a small give as the heel lands.
+        const swingBend = Math.max(0, vel) ** 1.3 * (0.75 + 0.55 * jog) * moving;
+        const landBend = Math.max(0, sw) * 0.12 * moving;
+        const knee = swingBend + landBend;
+        rotateBoneWorld(up, _axis, thigh);
+        rotateBoneWorld(low, _axis, knee);
+        // Keep the sole near level; tip the toes down a little at push-off.
+        if (foot) rotateBoneWorld(foot, _axis, -(thigh + knee) * 0.85 + Math.max(0, -sw) * Math.max(0, -vel) * 0.35 * moving);
+      };
+      legSwing(L.lUp, L.lLow, this.feet?.l, 1);
+      legSwing(L.rUp, L.rLow, this.feet?.r, -1);
+      if (this.bones) rotateBoneWorld(this.bones.spine, _axis, -0.05 * moving - 0.12 * jog); // lean into a jog
+      if (this.chest) rotateBoneWorld(this.chest, UP_W, Math.sin(ph) * 0.12 * moving);
+      // Standing still: breathe.
+      if (this.chest && moving < 0.2) rotateBoneWorld(this.chest, _axis, Math.sin(w.t * 1.7) * 0.015);
     }
 
     if (this.bones) {
       const b = this.bones;
-      const sw = Math.sin(w.phase) * amp * 0.32;
-      // Arms hang and swing opposite the legs (local +X is the character's left).
-      this._ikTarget.set(0.2 * s, 0.84 * s, sw * s + 0.03).applyMatrix4(this.root.matrixWorld);
+      // Arms swing opposite the legs, elbows a little bent (more when jogging); the forward hand rises.
+      const swing = Math.sin(ph) * (0.17 + 0.1 * jog) * moving;
+      const hand = (sideX, sgn) => {
+        const f = swing * sgn;
+        this._ikTarget.set(sideX * s, (0.86 + Math.max(0, f) * 0.35 + 0.1 * jog) * s, (f + 0.04 + 0.06 * jog) * s).applyMatrix4(this.root.matrixWorld);
+      };
+      hand(0.21, -1); // left hand forward with the right leg (sin < 0)
       solveCCD([b.leftArm, b.leftForeArm], b.leftHand, this._ikTarget);
-      this._ikTarget.set(-0.2 * s, 0.84 * s, -sw * s + 0.03).applyMatrix4(this.root.matrixWorld);
+      hand(-0.21, 1);
       solveCCD([b.rightArm, b.rightForeArm], b.rightHand, this._ikTarget);
-      // Paddle comes along in the racket hand (visual only).
-      (this.hand > 0 ? b.rightHand : b.leftHand).getWorldPosition(_a);
-      this.paddle.pivot.position.copy(_a.sub(this.paddle.position));
-      this.paddle.group.updateMatrixWorld(true);
     }
   }
 

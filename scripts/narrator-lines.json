@@ -38,5 +38,7 @@
   {"id": "zone_desks", "per": true, "text": "[dry] {name} wandered into the desk area, where people were doing actual work. {name} looked away quickly, out of respect."},
   {"id": "zone_lounge", "text": "[warm] The Lora Lounge. A sofa, a view of the water, and a television nobody had ever turned off. The afternoon began, very gently, to slip away."},
   {"id": "zone_kitchen", "per": true, "text": "[conspiratorial] The kitchen. {name} opened nothing, ate nothing, and yet somehow left feeling it had been a productive visit."},
-  {"id": "zone_meeting", "text": "[hushed] Behind the glass, a meeting was very nearly about to begin. It had been very nearly about to begin since Tuesday."}
+  {"id": "zone_meeting", "text": "[hushed] Behind the glass, a meeting was very nearly about to begin. It had been very nearly about to begin since Tuesday."},
+  {"id": "pc_sit", "per": true, "text": "[dry] {name} sat down at the computer and began sorting numbers by how they felt. Nobody had explained why. {name} found, to some alarm, that this was fine."},
+  {"id": "file_done", "per": true, "text": "[warm, faintly unsettling] The file was complete. {name} felt a small glow of accomplishment, and decided very firmly not to wonder where it had come from."}
 ]
