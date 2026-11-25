@@ -254,19 +254,33 @@ export class Sfx {
     src.connect(f).connect(g).connect(this.master);
     src.start(t);
   }
-  /** Arcade hoops: a clean basket. */
-  swish() {
-    this._noise(0.28, { gain: 0.35, freq: 2600, q: 0.6 });
-    this._blip(990, 0.18, { type: 'triangle', gain: 0.08, slide: 1.4 });
+  // Arcade hoops: a rubber basketball, a metal rim, a hollow backboard (no ping-pong clips).
+
+  /** Ball through the net (`clean`: nothing but net, a fuller swish). */
+  swish(clean = true) {
+    this._noise(0.32, { gain: clean ? 0.32 : 0.22, freq: 1800, q: 0.5 });
+    this._noise(0.18, { gain: clean ? 0.12 : 0.08, freq: 4200, q: 0.9 });
   }
-  /** Ball off the metal rim. */
+  /** Ball leaves your hands: a soft whoosh. */
+  shoot() {
+    this._noise(0.2, { gain: 0.1, freq: 600, q: 0.7 });
+  }
+  /** Rubber ball on the ramp: a deep, short thump (louder when it lands harder). */
+  ballBounce(speed = 2) {
+    const k = Math.min(1, speed / 4);
+    this._blip(105, 0.14, { type: 'sine', gain: 0.12 + k * 0.22, slide: 0.55 });
+    this._noise(0.06, { gain: 0.05 + k * 0.1, freq: 260, q: 1.2 });
+  }
+  /** Ball off the metal rim: a bright clang. */
   rim(power = 0.5) {
-    this._blip(520, 0.12, { type: 'square', gain: 0.04 + power * 0.06, slide: 0.97 });
-    this._blip(1560, 0.08, { type: 'triangle', gain: 0.05 + power * 0.05, slide: 0.98 });
+    this._blip(640, 0.22, { type: 'triangle', gain: 0.05 + power * 0.08, slide: 0.99 });
+    this._blip(1730, 0.16, { type: 'sine', gain: 0.03 + power * 0.06, slide: 0.99 });
+    this._blip(2690, 0.08, { type: 'sine', gain: 0.02 + power * 0.04, slide: 0.99 });
   }
-  /** Ball off the backboard. */
+  /** Ball off the backboard: a hollow thud with a little rattle. */
   board() {
-    this._blip(170, 0.09, { type: 'triangle', gain: 0.2, slide: 0.6 });
+    this._blip(120, 0.12, { type: 'sine', gain: 0.24, slide: 0.6 });
+    this._noise(0.1, { gain: 0.08, freq: 900, q: 1.5 });
   }
   /** End of the round. */
   buzzer() {
