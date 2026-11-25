@@ -71,7 +71,8 @@ export class Seats {
         // The first hit from above should be the seat cushion; skip spots that miss or hit the backrest.
         const hit = ray.intersectObject(obj, true)[0];
         if (!hit || hit.point.y < 0.2 || hit.point.y > 0.75) continue;
-        const seat = { x, z, yaw, fx, fz, seatY: hit.point.y, file, depth };
+        // Sofas and booths: the ray lands on the cushion's base, below its soft top.
+        const seat = { x, z, yaw, fx, fz, seatY: hit.point.y + (kind.bench ? 0.1 : 0), file, depth };
         if (/office_chair_mesh/.test(file)) seat.monitor = facingMonitor(seat, monitors);
         this.list.push(seat);
       }

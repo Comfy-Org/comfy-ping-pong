@@ -269,6 +269,7 @@ export class Character {
 
   stopWalking() {
     this.walk = null;
+    this._seatAnim = null;
     this.root.visible = true;
     this.paddle.group.visible = true;
     this.root.rotation.y = this.side === 0 ? Math.PI : 0;
@@ -285,7 +286,6 @@ export class Character {
 
   _updateWalk(dt) {
     const w = this.walk;
-    if (w.sit && !w.target) return this._updateSit(dt);
     if (w.target) {
       const a = Math.min(1, dt * 12);
       w.pos.x += (w.target.x - w.pos.x) * a;
@@ -293,7 +293,23 @@ export class Character {
       w.yaw += Math.atan2(Math.sin(w.target.yaw - w.yaw), Math.cos(w.target.yaw - w.yaw)) * a;
       w.speed += (w.target.speed - w.speed) * a;
     }
-    if (w.sit) return this._updateSit(dt);
+    // Sitting down and standing up are animated (see _updateSit).
+    const anim = this._seatAnim;
+    if (w.sit) {
+      if (!anim || anim.mode !== 'sit' || anim.st !== w.sit) {
+        const from = this._standAt ?? { x: w.pos.x, z: w.pos.z, yaw: w.yaw };
+        // Already seated and just switching seat info (chess re-sync): no new animation.
+        const instant = anim?.mode === 'sit' && Math.hypot(anim.st.x - w.sit.x, anim.st.z - w.sit.z) < 0.05;
+        this._seatAnim = { mode: 'sit', t: instant ? 9 : 0, dur: 0.95, st: w.sit, from };
+      }
+      return this._updateSit(dt);
+    }
+    if (anim?.mode === 'sit') this._seatAnim = { mode: 'stand', t: 0, dur: 0.75, st: anim.st };
+    if (this._seatAnim?.mode === 'stand') {
+      if (this._seatAnim.t < this._seatAnim.dur) return this._updateSit(dt);
+      this._seatAnim = null;
+    }
+    this._standAt = { x: w.pos.x, z: w.pos.z, yaw: w.yaw };
     // Out of the match the paddle is put away.
     this.paddle.group.visible = false;
     // Longer strides at higher speed: ~1.5 m per cycle (two steps) walking, ~2.1 m jogging.
@@ -393,10 +409,39 @@ export class Character {
    */
   _updateSit(dt) {
     const w = this.walk;
-    const st = w.sit;
+    const anim = this._seatAnim;
+    const st = anim.st;
+    anim.t += dt;
+    const D = Math.PI / 180;
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const smooth = (v) => v * v * (3 - 2 * v);
+    // k: 0 standing → 1 seated. Sitting runs it forward, standing up runs it backward.
+    const lin = clamp01(anim.t / anim.dur);
+    const k = anim.mode === 'sit' ? lin : 1 - lin;
+    // Path: the standing spot → just in front of the seat (turning to face away from the
+    // chair) → back and down onto the seat. Standing up ends wherever walk.pos now is.
+    const frontX = st.x + Math.sin(st.yaw) * 0.2;
+    const frontZ = st.z + Math.cos(st.yaw) * 0.2;
+    const end = anim.mode === 'sit' ? anim.from : { x: w.pos.x, z: w.pos.z, yaw: w.yaw };
+    let x, z, yaw;
+    if (k < 0.35) {
+      const u = smooth(k / 0.35);
+      x = end.x + (frontX - end.x) * u;
+      z = end.z + (frontZ - end.z) * u;
+      const dy = Math.atan2(Math.sin(st.yaw - end.yaw), Math.cos(st.yaw - end.yaw));
+      yaw = end.yaw + dy * u;
+    } else {
+      const u = smooth((k - 0.35) / 0.65);
+      x = frontX + (st.x - frontX) * u;
+      z = frontZ + (st.z - frontZ) * u;
+      yaw = st.yaw;
+    }
+    // Lowering happens in the second half; standing up rises a little quicker (a push-off).
+    const down = smooth(clamp01((k - 0.3) / 0.62));
+    const bump = Math.sin(Math.PI * clamp01((k - 0.25) / 0.75)); // most bent / leaning mid-way
     const hipsY = this._hipsRestY ?? 0.95 * (this.def.height / 1.78);
-    this.root.position.set(w.pos.x, st.y + 0.08 - hipsY, w.pos.z);
-    this.root.rotation.y = w.yaw;
+    this.root.position.set(x, (st.y + 0.08 - hipsY) * down, z);
+    this.root.rotation.y = yaw;
     this.root.updateMatrixWorld(true);
     this.paddle.group.visible = false;
     w.speed = 0;
@@ -408,17 +453,40 @@ export class Character {
     this.model.updateMatrixWorld(true);
     _axis.set(1, 0, 0).transformDirection(this.model.matrixWorld);
     if (this.legs) {
+      // Absolute leg angles in the body's forward plane (same scheme as walking): standing
+      // straight → knees bent with the shins tipped back under the body → seated.
       const L = this.legs;
-      rotateBoneWorld(L.lUp, _axis, -1.45);
-      rotateBoneWorld(L.rUp, _axis, -1.45);
-      rotateBoneWorld(L.lLow, _axis, 1.45);
-      rotateBoneWorld(L.rLow, _axis, 1.45);
+      _fwd.set(Math.sin(yaw), 0, Math.cos(yaw));
+      const thigh = (4 + 78 * down) * D;
+      const shin = (-6 * down - 30 * bump) * D;
+      for (const [up, low] of [[L.lUp, L.lLow], [L.rUp, L.rLow]]) {
+        const feet = up === L.lUp ? this.feet?.l : this.feet?.r;
+        alignBone(up, low, _dir.copy(_fwd).multiplyScalar(Math.sin(thigh)).setY(-Math.cos(thigh)));
+        alignBone(low, feet, _dir.copy(_fwd).multiplyScalar(Math.sin(shin)).setY(-Math.cos(shin)));
+      }
     }
+    // Arms: hang at the sides while moving; on the table (or lap) once seated.
+    const seated = k >= 0.999;
+    if (!seated) {
+      if (this.bones) {
+        const b = this.bones;
+        rotateBoneWorld(b.spine, _axis, 0.05 + 0.5 * bump + 0.07 * down);
+        const s = this.def.height / 1.78;
+        // Hands drift forward as you lean (reaching for the armrests / pushing off them).
+        const hand = (sideX) => this._ikTarget.set(sideX * s, (0.84 - 0.12 * bump) * s, (0.06 + 0.22 * bump) * s).applyMatrix4(this.root.matrixWorld);
+        hand(0.22);
+        solveCCD([b.leftArm, b.leftForeArm], b.leftHand, this._ikTarget);
+        hand(-0.22);
+        solveCCD([b.rightArm, b.rightForeArm], b.rightHand, this._ikTarget);
+      }
+      return;
+    }
+    w.pos.set(st.x, 0, st.z);
     if (!this.bones) return;
     const b = this.bones;
     // Lean in over the table; a little more while reaching.
     const reaching = w.reach && w.reach.t > 0;
-    rotateBoneWorld(b.spine, _axis, reaching ? -0.3 : -0.12);
+    rotateBoneWorld(b.spine, _axis, reaching ? 0.3 : 0.12);
     const fx = Math.sin(w.yaw);
     const fz = Math.cos(w.yaw);
     const cx = w.pos.x + fx * 0.3;

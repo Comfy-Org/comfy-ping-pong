@@ -76,8 +76,9 @@ export function buildFloor(scene, shell, arena) {
   openDoorway(shell, g);
 
   // ---- floors
-  const carpet = mat(0xffffff, { map: tileTexture('#6f7378', '#666a6f', 4, 0.5), roughness: 1 });
-  carpet.map.repeat.set((KITCHEN_X - HALL.minX) / 2, (HALL.maxZ - HALL.minZ) / 2);
+  const carpetTex = carpetTexture();
+  const carpet = mat(0xffffff, { map: carpetTex, bumpMap: carpetTex, bumpScale: 0.6, roughness: 1 });
+  carpet.map.repeat.set((KITCHEN_X - HALL.minX) / 1.2, (HALL.maxZ - HALL.minZ) / 1.2);
   plane(KITCHEN_X - HALL.minX, HALL.maxZ - HALL.minZ, carpet, (HALL.minX + KITCHEN_X) / 2, 0, (HALL.minZ + HALL.maxZ) / 2);
   const concrete = mat(0xffffff, { map: tileTexture('#c9c2b6', '#bdb5a8', 1, 0.6), roughness: 0.7 });
   concrete.map.repeat.set((HALL.maxX - KITCHEN_X) / 1.2, (HALL.maxZ - HALL.minZ) / 1.2);
@@ -183,16 +184,67 @@ export function buildFloor(scene, shell, arena) {
   box(6.4, 0.8, 0.36, wood, 12.25, 1.5, HALL.maxZ - 0.18);
   solid(9.05, 15.45, HALL.maxZ - 0.66, HALL.maxZ, 'cabinets');
 
-  // ---- the game room doors stand open into the hall
+  // ---- the game room's double doors: they rest closed, swing open when someone walks into
+  // them (either way), and drift shut again. A door that can't swing any further blocks you.
   const doorMat = findMaterial(shell, 'door') ?? mat(0x6b5a48);
+  const LEAF = 0.91;
+  const doors = [];
   for (const [hx, dir] of [[-3.83, 1], [-1.97, -1]]) {
     const pivot = new THREE.Group();
-    pivot.position.set(hx, 0, GAME.minZ - 0.02);
-    pivot.rotation.y = dir * (Math.PI / 2 - 0.25); // swung back almost against the wall
-    box(0.91, 2.3, 0.04, doorMat, (dir * 0.91) / 2, 0, -0.02, { parent: pivot });
+    const hz = GAME.minZ - 0.1; // in the middle of the wall's thickness
+    pivot.position.set(hx, 0, hz);
+    box(LEAF, 2.3, 0.04, doorMat, (dir * LEAF) / 2, 0, -0.02, { parent: pivot });
     g.add(pivot);
+    // angle: pivot.rotation.y; the leaf points along (cos, -sin) of (angle + off).
+    doors.push({ pivot, hx, hz, off: dir > 0 ? 0 : Math.PI, angle: 0, vel: 0 });
   }
-  // (The leaves sit just outside the walking lane of the doorway, so they need no colliders.)
+  const DOOR_LIMIT = Math.PI / 2 + 0.9; // nearly back against the wall either way
+  const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+  /** Swing the doors for these walkers ([{pos, push}]); `push` walkers can be shoved back. */
+  function updateDoors(dt, walkers) {
+    const R = 0.3;
+    for (const d of doors) {
+      let pushed = false;
+      for (const { pos, push } of walkers) {
+        const dx = pos.x - d.hx;
+        const dz = pos.z - d.hz;
+        const dist = Math.hypot(dx, dz);
+        if (dist < 0.05 || dist > LEAF + R) continue;
+        const leaf = d.angle + d.off;
+        const phi = Math.atan2(-dz, dx);
+        const diff = wrap(phi - leaf);
+        const need = Math.asin(Math.min(1, R / dist));
+        if (Math.abs(diff) >= need || Math.abs(diff) > Math.PI / 2) continue;
+        // Swing the leaf just clear of the walker, away from them.
+        const want = wrap(phi - Math.sign(diff || 1) * need - d.off);
+        const clamped = Math.max(-DOOR_LIMIT, Math.min(DOOR_LIMIT, want));
+        d.vel = (clamped - d.angle) / Math.max(dt, 1e-3) * 0.3;
+        d.angle = clamped;
+        pushed = true;
+        if (clamped !== want && push) {
+          // Against its stop: the door holds, so the walker is pushed back off it.
+          const lx = Math.cos(clamped + d.off);
+          const lz = -Math.sin(clamped + d.off);
+          const along = Math.max(0, Math.min(LEAF, dx * lx + dz * lz));
+          const cx = d.hx + lx * along;
+          const cz = d.hz + lz * along;
+          const ox = pos.x - cx;
+          const oz = pos.z - cz;
+          const o = Math.hypot(ox, oz) || 1;
+          if (o < R) {
+            pos.x = cx + (ox / o) * R;
+            pos.z = cz + (oz / o) * R;
+          }
+        }
+      }
+      if (!pushed) {
+        // A gentle closer: springs back with a little overshoot.
+        d.vel += (-d.angle * 3.5 - d.vel * 2.6) * dt;
+        d.angle = Math.max(-DOOR_LIMIT, Math.min(DOOR_LIMIT, d.angle + d.vel * dt));
+      }
+      d.pivot.rotation.y = d.angle;
+    }
+  }
 
   // ---- lighting: a few broad fixtures per area, plus one shadow light that follows you
   const lights = [];
@@ -240,6 +292,7 @@ export function buildFloor(scene, shell, arena) {
     rects,
     camRects,
     camBlocks,
+    updateDoors,
     /** Per frame, with the local walker's position (or null when nobody is walking). */
     update(pos) {
       const inGame = !pos || pos.z > GAME.minZ - 0.4;
@@ -312,6 +365,53 @@ function tileTexture(fill, line, lineWidth, noise) {
   x.strokeStyle = line;
   x.lineWidth = lineWidth;
   x.strokeRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/**
+ * Office carpet tiles: a dense, slightly flecked loop pile in slate blue-grey. One texture
+ * holds a 2x2 block of 0.6 m tiles laid in alternating directions (the usual quarter-turn
+ * install), which shows as a faint checker of grain at a distance.
+ */
+function carpetTexture() {
+  const N = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = N;
+  const x = c.getContext('2d');
+  const img = x.createImageData(N, N);
+  const base = [86, 93, 104];
+  for (let y = 0; y < N; y++) {
+    for (let px = 0; px < N; px++) {
+      const i = (y * N + px) * 4;
+      // Rows of loops, running across or along depending on the tile.
+      const across = ((px < N / 2) !== (y < N / 2));
+      const row = across ? y : px;
+      const loop = Math.sin(row * 1.9) * 7 + Math.sin((across ? px : y) * 0.7 + row) * 3;
+      const grain = (Math.random() - 0.5) * 34;
+      // The odd bright or dark fleck, as in real tufted yarn.
+      const fleck = Math.random() < 0.015 ? (Math.random() < 0.5 ? -40 : 30) : 0;
+      const v = loop + grain + fleck;
+      img.data[i] = base[0] + v;
+      img.data[i + 1] = base[1] + v * 1.02;
+      img.data[i + 2] = base[2] + v * 1.08;
+      img.data[i + 3] = 255;
+    }
+  }
+  x.putImageData(img, 0, 0);
+  // Faint seams between tiles.
+  x.strokeStyle = 'rgba(40,44,52,0.35)';
+  x.lineWidth = 1.5;
+  x.strokeRect(0, 0, N, N);
+  x.beginPath();
+  x.moveTo(N / 2, 0);
+  x.lineTo(N / 2, N);
+  x.moveTo(0, N / 2);
+  x.lineTo(N, N / 2);
+  x.stroke();
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = THREE.SRGBColorSpace;

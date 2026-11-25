@@ -245,6 +245,11 @@ export class Explore {
     // The chess board, the arcade and the computer need a free cursor.
     if (this._dom && document.pointerLockElement === this._dom && !this._canLook()) document.exitPointerLock();
     this.hoops?.update(dt);
+    // Doors swing for everyone walking (you can be stopped by one; the other player only pushes).
+    const walkers = this.game.players
+      .filter((p) => p.walk && !p.walk.sit)
+      .map((p) => ({ pos: p.walk.pos, push: p.side === this.game.localSide }));
+    this.game.arena.floor?.updateDoors(dt, walkers);
     this.game.arena.floor?.update(this.active && !this.chess?.seated && !this.seats?.terminal.open ? this.game.players[this.game.localSide].walk?.pos : null);
     if (!this.active) return;
     const g = this.game;
