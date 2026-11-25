@@ -179,7 +179,7 @@ export class Sfx {
    */
   step(pos, speed = 1.4, surface = 'carpet', muffled = false) {
     const jog = Math.min(1, Math.max(0, (speed - 1.6) / 1.7));
-    const gain = (surface === 'carpet' ? 0.33 : 0.27) * (0.75 + 0.45 * jog);
+    const gain = (surface === 'carpet' ? 0.24 : 0.2) * (0.75 + 0.45 * jog);
     // Steep fall-off: your own steps (about 3 m from the camera) are clear, someone across
     // the room is faint, and the far end of the office is silent.
     this._play(`steps_${surface}`, {
