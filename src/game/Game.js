@@ -14,6 +14,7 @@ import { Match } from './Match.js';
 import { HUD } from '../ui/HUD.js';
 import { Sfx } from '../audio/Sfx.js';
 import { Explore } from '../world/Explore.js';
+import { zoneAt } from '../world/Floor.js';
 
 /** Split a spin vector into topspin (+) / backspin (−) and sidespin, relative to travel. */
 function spinParts(vel, spin) {
@@ -45,6 +46,8 @@ export class Game {
     this.officeReady = loadOffice(this.scene, this.arena);
     this.ball = new Ball(this.scene);
     this.players = characters.map((def, side) => new Character(def, side));
+    // Footsteps: the floor under each step decides the sound.
+    for (const p of this.players) p.onStep = (pos, speed) => this.sfx.step(pos, speed, surfaceAt(pos.x, pos.z));
     this.players.forEach((p) => p.addTo(this.scene));
 
     this.difficulty = difficulty;
@@ -207,7 +210,7 @@ export class Game {
   _smashFx(side) {
     this._slowmo = SUPER.slowmoTime;
     this._shake = 0.06;
-    this.sfx.smash();
+    this.sfx.smash(this.ball.pos);
     this.hud.flash('SUPER SMASH!', 'super');
     this.emit('super', { side });
   }
@@ -262,6 +265,13 @@ export class Game {
   onWalkBack() {
     Object.assign(this.human, { wantsServe: false, wantsSuper: false, pressed: false });
     this.net?.send({ t: 'away', on: false });
+    // Offline with an opponent still out in the office (they left mid-game): the computer
+    // brings them back to the table with us.
+    const remote = 1 - this.localSide;
+    if (!this.net && this.away[remote]) {
+      this.away[remote] = false;
+      this.players[remote].stopWalking();
+    }
     this._setAway(this.localSide, false);
   }
 
@@ -350,9 +360,18 @@ export class Game {
     this.net = null;
     net?.close();
     const remote = 1 - this.localSide;
-    if (this.away[remote]) this._setAway(remote, false);
     this.controllers[remote] = new AIController(remote, this.difficulty);
-    if (reason) this.hud.message(reason, 'The computer takes over', 3);
+    if (this.away[remote]) {
+      if (this.away[this.localSide]) {
+        // We're off in the office (hoops, chess, a computer...): leave all of that alone. Their
+        // character just stops where it was, and the computer takes their side at the table
+        // when we walk back to it (see onWalkBack).
+        const w = this.players[remote].walk;
+        if (w) Object.assign(w, { target: null, speed: 0 });
+        this.explore.chess?.onOpponentLeft();
+      } else this._setAway(remote, false);
+    }
+    if (reason) this.hud.message(reason, 'The computer will play their side', 2.5);
     this._updateStatus();
   }
 
@@ -407,7 +426,7 @@ export class Game {
     this.rally.time = 0;
     this.rally.touchedNet = false;
     this.players[side].swing();
-    this.sfx.hit(power);
+    this.sfx.hit(power, this.ball.pos);
     this.emit('hit', { side, power });
   }
 
@@ -475,9 +494,10 @@ export class Game {
   }
 
   _onBallEvent(e) {
-    if (e.type === 'table') this.sfx.bounce();
-    else if (e.type === 'net') this.sfx.net();
-    else if (e.type === 'floor') this.sfx.floor();
+    const at = this.ball.pos;
+    if (e.type === 'table') this.sfx.bounce(e.speed, at);
+    else if (e.type === 'net') this.sfx.net(at);
+    else if (e.type === 'floor') this.sfx.floor(e.speed, at);
     if (!this.isLive()) return;
 
     const h = this.rally.lastHitter;
@@ -610,6 +630,8 @@ export class Game {
       this._updateCamera(dt);
     }
     this.hud.update(dt);
+    this.camera.updateMatrixWorld();
+    this.sfx.setListener(this.camera);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -716,3 +738,8 @@ export class Game {
   }
 }
 
+/** What the floor is made of at (x, z): wood in the game room, concrete in the kitchen, carpet elsewhere. */
+function surfaceAt(x, z) {
+  const id = zoneAt(x, z)?.id;
+  return id === 'game' ? 'wood' : id === 'kitchen' ? 'concrete' : 'carpet';
+}

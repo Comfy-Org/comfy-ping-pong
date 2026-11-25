@@ -109,6 +109,20 @@ up from a chess game you haven't finished. These lines are marked `"egg": true` 
 Clips land in `public/narrator/` (`<id>.mp3`, or `<id>_matt.mp3` / `<id>_deep.mp3` for `per` lines).
 A line without a clip is shown as text only. Code: `src/audio/Narrator.js`.
 
+## Sound effects
+
+Paddle hits, table and floor bounces, the net, and footsteps are recorded clips in `public/sfx/`,
+made with ElevenLabs Sound Effects through the Comfy API router. Each clip holds several separate
+hits or steps; `src/audio/Sfx.js` cuts them apart when it loads and picks one at random each time,
+with small changes in pitch and level. Sounds are placed in 3D around the camera (quieter with
+distance, panned left/right) with a little room reverb. Footsteps change with the floor: wood in
+the game room, carpet on the office floor, concrete in the kitchen.
+
+```bash
+node scripts/generate-sfx.mjs              # needs COMFY_API_KEY; only makes missing clips
+node scripts/generate-sfx.mjs steps_wood   # redo specific clips
+```
+
 ## The office TV (purz.tv)
 
 The wall TV plays the [purz.tv](https://purz.tv) channel: the same clips the site plays, shuffled,
@@ -168,7 +182,7 @@ src/
   world/Floor.js            the rest of the office floor (shell, windows, zones)
   controllers/              HumanController (mouse), AIController (predict + error)
   entities/                 Arena, Ball, Paddle
-  ui/HUD.js, audio/Sfx.js   scoreboard/messages, synthesized sounds
+  ui/HUD.js, audio/Sfx.js   scoreboard/messages, sound effects
 ```
 
 Hooks: `game.on('hit' | 'point' | 'pointStart' | 'gameOver', fn)` for camera shake, replays,

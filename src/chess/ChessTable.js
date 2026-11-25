@@ -550,6 +550,12 @@ export class ChessTable {
   }
 
   /** Remote player's walk packets say whether they're sitting. */
+  /** Online opponent disconnected: the computer finishes the game for them. */
+  onOpponentLeft() {
+    this.remoteSeated = false;
+    if (this.seated && this.opponent === 'ai' && this.chess.turn !== this.myColor) this._scheduleAI();
+  }
+
   applyRemoteSit(side, sitting) {
     const ch = this.game.players[side];
     if (!ch.walk) return;
