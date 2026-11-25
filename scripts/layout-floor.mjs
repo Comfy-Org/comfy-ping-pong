@@ -38,7 +38,7 @@ for (const rz of [-10.6, -14.6, -18.6]) {
 }
 for (const [x, z, r] of [[-4.8, -12.6, 90], [-4.8, -16.6, 90], [6.5, -12.6, -90], [6.5, -16.6, -90]])
   add('desks', 'wall_planter.glb', x, 1.5, z, r, { castShadow: false });
-add('desks', 'rolling_whiteboard.glb', -4.9, 0, -8.6, 60);
+add('desks', 'rolling_whiteboard.glb', 6.5, 0, -19.9, 0); // tucked in the far corner by the windows
 add('desks', 'exit_sign.glb', -2.9, 2.55, -6.72, 180, { castShadow: false });
 add('desks', 'fire_extinguisher_sign.glb', 6.74, 1.3, -14.6, -90, { castShadow: false });
 
