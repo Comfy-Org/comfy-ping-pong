@@ -32,6 +32,7 @@ function consumeAutoEnter() {
 }
 
 // Handy for debugging from the console.
+// TODO(dev): debug dev view + `window.__dev` test/benchmark hooks. See TODO.md (Dev tooling).
 window.game = game;
 window.lobby = lobby;
 window.tv = tv;

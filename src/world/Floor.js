@@ -126,24 +126,92 @@ export function buildFloor(scene, shell, arena) {
   windowWall('z', HALL.minZ, HALL.maxZ, HALL.maxX, -1);
   addViews(g);
 
-  // ---- ceilings
-  // Lights point down, so the tiles get a little glow of their own (bounce off the floor and desks).
-  const tileMap = tileTexture('#eceae6', '#c9c6c0', 1, 0.97);
-  const tiles = new THREE.MeshStandardMaterial({ color: 0xffffff, map: tileMap, emissive: 0x8a8781, emissiveMap: tileMap, roughness: 1, side: THREE.DoubleSide });
+  // ---- ceilings (from the office photos)
+  // Desks, lounge, meeting rooms: a drop ceiling of 2'x2' acoustic tiles (speckled and fissured)
+  // in a white T-bar grid, 2'x4' troffer lights, sprinkler heads, smoke detectors and return-air
+  // grilles. Lights point down, so the tiles get a little glow of their own (bounce light).
+  const tileMap = acousticTileTexture();
+  const tiles = new THREE.MeshStandardMaterial({ color: 0xffffff, map: tileMap, bumpMap: tileMap, bumpScale: 1.2, emissive: 0x8a8781, emissiveMap: tileMap, roughness: 1, side: THREE.DoubleSide });
   tiles.map.repeat.set((KITCHEN_X - HALL.minX) / 0.6, (HALL.maxZ - HALL.minZ) / 0.6);
   plane(KITCHEN_X - HALL.minX, HALL.maxZ - HALL.minZ, tiles, (HALL.minX + KITCHEN_X) / 2, DROP_CEIL, (HALL.minZ + HALL.maxZ) / 2, true);
-  const panel = new THREE.MeshBasicMaterial({ color: 0xfffdf6 });
-  for (let x = -4; x <= 6; x += 2.4) for (let z = -8.6; z >= -19.4; z -= 2.4) plane(0.6, 1.2, panel, x, DROP_CEIL - 0.005, z, true);
-  for (const [x, z] of [[-11, -15], [-8.2, -15], [-11, -18.4], [-8.2, -18.4], [-11.9, -9], [-9.6, -9], [-9.6, -12.2]])
-    plane(0.6, 0.6, panel, x, DROP_CEIL - 0.005, z, true);
-  const dark = mat(0x2b2d31, { roughness: 0.95, side: THREE.DoubleSide });
-  plane(HALL.maxX - KITCHEN_X, HALL.maxZ - HALL.minZ, dark, (KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL, (HALL.minZ + HALL.maxZ) / 2, true);
-  const duct = mat(0x8d9196, { roughness: 0.4, metalness: 0.7 });
+  const panel = new THREE.MeshBasicMaterial({ map: trofferTexture() });
+  const troffer = (x, z, w, d) => {
+    plane(w, d, panel, x, DROP_CEIL - 0.006, z, true);
+  };
+  for (let x = -4; x <= 6; x += 2.4) for (let z = -8.6; z >= -19.4; z -= 2.4) troffer(x, z, 0.6, 1.2);
+  for (const [x, z] of [[-11, -15], [-8.2, -15], [-11, -18.4], [-8.2, -18.4], [-11.9, -9], [-9.6, -9], [-9.6, -12.2]]) troffer(x, z, 0.6, 0.6);
+  // Return-air grilles: darker slotted 2'x2' panels between the lights.
+  const grille = new THREE.MeshStandardMaterial({ map: grilleTexture(), roughness: 0.8, side: THREE.DoubleSide });
+  for (const [x, z] of [[-2.8, -12.2], [3.2, -12.2], [-2.8, -16.8], [3.2, -16.8], [0.2, -19.6], [-10.4, -13.6], [-10.4, -7.6]])
+    plane(0.6, 0.6, grille, x, DROP_CEIL - 0.004, z, true);
+  // Sprinkler heads (chrome) on a ~3 m grid, and a few smoke detectors (white).
+  const chrome = mat(0xd8dadc, { roughness: 0.25, metalness: 0.9 });
+  const white = mat(0xf4f3f0, { roughness: 0.6 });
+  const sprinklerGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.012, 14);
+  const stemGeo = new THREE.CylinderGeometry(0.01, 0.012, 0.05, 8);
+  for (let x = -12.1; x < KITCHEN_X - 0.5; x += 3) {
+    for (let z = -7.9; z > HALL.minZ + 0.5; z -= 3) {
+      const rose = new THREE.Mesh(sprinklerGeo, chrome);
+      rose.position.set(x, DROP_CEIL - 0.008, z);
+      const stem = new THREE.Mesh(stemGeo, chrome);
+      stem.position.set(x, DROP_CEIL - 0.04, z);
+      g.add(rose, stem);
+    }
+  }
+  const detGeo = new THREE.CylinderGeometry(0.065, 0.07, 0.035, 20);
+  for (const [x, z] of [[-1.6, -11.4], [4.0, -15.8], [-9.4, -16.0], [-10.6, -10.4]]) {
+    const det = new THREE.Mesh(detGeo, white);
+    det.position.set(x, DROP_CEIL - 0.02, z);
+    g.add(det);
+  }
+
+  // Kitchen: exposed ceiling, the deck sprayed with grey-white fireproofing, white round ducts,
+  // a run of pipes and a cable tray (the pendants come from the layout).
+  // (Lit from below by bounce light the renderer doesn't model, so it glows a little itself.)
+  const sprayTex = sprayTexture();
+  const spray = new THREE.MeshStandardMaterial({ map: sprayTex, emissive: 0x8d8a84, emissiveMap: sprayTex, roughness: 1, side: THREE.DoubleSide });
+  spray.map.repeat.set((HALL.maxX - KITCHEN_X) / 2, (HALL.maxZ - HALL.minZ) / 2);
+  spray.bumpMap = spray.map;
+  spray.bumpScale = 2;
+  plane(HALL.maxX - KITCHEN_X, HALL.maxZ - HALL.minZ, spray, (KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL, (HALL.minZ + HALL.maxZ) / 2, true);
+  // Steel beams under the deck, sprayed like it.
+  for (const z of [-8.6, -12.6, -16.6]) box(HALL.maxX - KITCHEN_X, 0.3, 0.18, spray, (KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL - 0.3, z, { cast: false });
+  const duct = mat(0xeeeeec, { roughness: 0.55, metalness: 0.15 });
+  const len = HALL.maxX - KITCHEN_X;
   for (const z of [-10.5, -16.5]) {
-    const d = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, HALL.maxX - KITCHEN_X, 16), duct);
+    const d = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, len, 20), duct);
     d.rotation.z = Math.PI / 2;
-    d.position.set((KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL - 0.3, z);
+    d.position.set((KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL - 0.48, z);
     g.add(d);
+    // Seams every 1.5 m.
+    for (let x = KITCHEN_X + 0.75; x < HALL.maxX; x += 1.5) {
+      const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.228, 0.228, 0.03, 20), duct);
+      ring.rotation.z = Math.PI / 2;
+      ring.position.set(x, KITCHEN_CEIL - 0.48, z);
+      g.add(ring);
+    }
+  }
+  const pipeMat = mat(0xc9ccd0, { roughness: 0.35, metalness: 0.6 });
+  for (const [z, r] of [[-13.4, 0.04], [-13.6, 0.025], [-19.2, 0.05]]) {
+    const p = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 10), pipeMat);
+    p.rotation.z = Math.PI / 2;
+    p.position.set((KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL - 0.2, z);
+    g.add(p);
+  }
+  box(len, 0.04, 0.3, pipeMat, (KITCHEN_X + HALL.maxX) / 2, KITCHEN_CEIL - 0.62, -14.4, { cast: false }); // cable tray
+
+  // The game room's own exposed ceiling gets the same sprayed look.
+  const roomCeil = findMaterial(shell, 'ceiling');
+  if (roomCeil) {
+    const t = sprayTexture();
+    t.repeat.set(7, 6);
+    roomCeil.map = t;
+    roomCeil.emissive?.set(0x6f6c67);
+    roomCeil.emissiveMap = t;
+    roomCeil.bumpMap = t;
+    roomCeil.bumpScale = 2;
+    roomCeil.color.set(0xffffff);
+    roomCeil.needsUpdate = true;
   }
 
   // ---- the partition between desks and kitchen (open in the middle), and its bulkhead
@@ -365,6 +433,150 @@ function tileTexture(fill, line, lineWidth, noise) {
   x.strokeStyle = line;
   x.lineWidth = lineWidth;
   x.strokeRect(0, 0, 128, 128);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** One 2'x2' acoustic ceiling tile in its T-bar: off-white, pin-holed and fissured, edges shadowed. */
+function acousticTileTexture() {
+  const N = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = N;
+  const x = c.getContext('2d');
+  x.fillStyle = '#efede8';
+  x.fillRect(0, 0, N, N);
+  const img = x.getImageData(0, 0, N, N);
+  for (let i = 0; i < img.data.length; i += 4) {
+    let v = (Math.random() - 0.5) * 10;
+    if (Math.random() < 0.02) v -= 35 + Math.random() * 30; // pinholes
+    img.data[i] += v;
+    img.data[i + 1] += v;
+    img.data[i + 2] += v;
+  }
+  x.putImageData(img, 0, 0);
+  // Fissures: short wandering grooves.
+  x.strokeStyle = 'rgba(160,156,148,0.35)';
+  x.lineCap = 'round';
+  for (let k = 0; k < 70; k++) {
+    let px = Math.random() * N;
+    let py = Math.random() * N;
+    let a = Math.random() * Math.PI * 2;
+    x.lineWidth = 0.8 + Math.random() * 1.2;
+    x.beginPath();
+    x.moveTo(px, py);
+    for (let j = 0; j < 5; j++) {
+      a += (Math.random() - 0.5) * 1.4;
+      px += Math.cos(a) * 4;
+      py += Math.sin(a) * 4;
+      x.lineTo(px, py);
+    }
+    x.stroke();
+  }
+  // The tile sits a touch above the grid: a soft shadow inside its edge, then the white T-bar.
+  const sh = x.createLinearGradient(0, 0, 0, 12);
+  for (const [w, h, rot] of [[N, 12, 0], [N, 12, 1], [N, 12, 2], [N, 12, 3]]) {
+    x.save();
+    x.translate(N / 2, N / 2);
+    x.rotate((rot * Math.PI) / 2);
+    x.translate(-N / 2, -N / 2);
+    const gr = x.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, 'rgba(120,116,110,0.35)');
+    gr.addColorStop(1, 'rgba(120,116,110,0)');
+    x.fillStyle = gr;
+    x.fillRect(0, 0, w, h);
+    x.restore();
+  }
+  void sh;
+  x.strokeStyle = '#f7f7f5';
+  x.lineWidth = 6;
+  x.strokeRect(0, 0, N, N);
+  x.strokeStyle = 'rgba(150,150,146,0.7)';
+  x.lineWidth = 1;
+  x.strokeRect(3.5, 3.5, N - 7, N - 7);
+  return canvasTex(c);
+}
+
+/** A 2'x4' troffer: white frame, glowing diffuser with a fine prismatic grid and two brighter tubes. */
+function trofferTexture() {
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 256;
+  const x = c.getContext('2d');
+  x.fillStyle = '#e9e8e4';
+  x.fillRect(0, 0, 128, 256);
+  const gr = x.createLinearGradient(10, 0, 118, 0);
+  gr.addColorStop(0, '#f2f1ec');
+  gr.addColorStop(0.3, '#ffffff');
+  gr.addColorStop(0.5, '#f6f5f0');
+  gr.addColorStop(0.7, '#ffffff');
+  gr.addColorStop(1, '#f2f1ec');
+  x.fillStyle = gr;
+  x.fillRect(9, 9, 110, 238);
+  x.strokeStyle = 'rgba(200,198,190,0.35)';
+  x.lineWidth = 1;
+  for (let i = 9; i < 119; i += 4) {
+    x.beginPath();
+    x.moveTo(i, 9);
+    x.lineTo(i, 247);
+    x.stroke();
+  }
+  for (let j = 9; j < 247; j += 4) {
+    x.beginPath();
+    x.moveTo(9, j);
+    x.lineTo(119, j);
+    x.stroke();
+  }
+  x.strokeStyle = '#d4d3ce';
+  x.lineWidth = 2;
+  x.strokeRect(8, 8, 112, 240);
+  return canvasTex(c);
+}
+
+/** A return-air grille: a frame around parallel dark slots. */
+function grilleTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const x = c.getContext('2d');
+  x.fillStyle = '#e6e5e1';
+  x.fillRect(0, 0, 128, 128);
+  x.fillStyle = '#5d5f62';
+  for (let i = 14; i < 114; i += 7) x.fillRect(12, i, 104, 3.2);
+  x.strokeStyle = '#cfceca';
+  x.lineWidth = 3;
+  x.strokeRect(8, 8, 112, 112);
+  return canvasTex(c);
+}
+
+/** Sprayed-on fireproofing on an exposed deck: lumpy, grey-white, with darker pits. */
+function sprayTexture() {
+  const N = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = N;
+  const x = c.getContext('2d');
+  x.fillStyle = '#cfccc6';
+  x.fillRect(0, 0, N, N);
+  // Lumps at a few sizes (wrapped so the texture tiles).
+  for (const [count, r0, r1, a] of [[260, 6, 14, 0.18], [900, 2, 5, 0.22], [2500, 0.6, 1.6, 0.3]]) {
+    for (let k = 0; k < count; k++) {
+      const px = Math.random() * N;
+      const py = Math.random() * N;
+      const r = r0 + Math.random() * (r1 - r0);
+      const light = Math.random() < 0.55;
+      x.fillStyle = light ? `rgba(245,243,238,${a})` : `rgba(120,116,110,${a})`;
+      for (const [ox, oy] of [[0, 0], [N, 0], [-N, 0], [0, N], [0, -N]]) {
+        x.beginPath();
+        x.arc(px + ox, py + oy, r, 0, Math.PI * 2);
+        x.fill();
+      }
+    }
+  }
+  return canvasTex(c);
+}
+
+function canvasTex(c) {
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = THREE.SRGBColorSpace;
