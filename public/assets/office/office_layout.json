@@ -1520,11 +1520,11 @@
  {
   "file": "rolling_whiteboard.glb",
   "position": [
-   -4.9,
+   6.5,
    0,
-   -8.6
+   -19.9
   ],
-  "rotY": 60,
+  "rotY": 0,
   "zone": "desks"
  },
  {
