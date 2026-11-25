@@ -168,7 +168,7 @@ export class Sfx {
    */
   step(pos, speed = 1.4, surface = 'carpet') {
     const jog = Math.min(1, Math.max(0, (speed - 1.6) / 1.7));
-    const gain = (surface === 'carpet' ? 0.55 : 0.45) * (0.75 + 0.45 * jog);
+    const gain = (surface === 'carpet' ? 0.33 : 0.27) * (0.75 + 0.45 * jog);
     this._play(`steps_${surface}`, { pos: { x: pos.x, y: 0.05, z: pos.z }, gain, rate: 1 + 0.06 * jog, wet: 0.08 });
   }
 
