@@ -119,6 +119,7 @@
       .terminal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; background: #04100f;
         opacity: 0; transition: opacity 0.45s ease; font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; color: #9fe6d6; }
       .terminal.on { opacity: 1; }
+      .terminal[hidden] { display: none; } /* `display: grid` above would otherwise override [hidden] and block every click */
       .terminal .crt { position: relative; width: min(1180px, 100vw); height: min(760px, 100vh); display: flex; flex-direction: column;
         padding: 22px 28px 18px; box-sizing: border-box; border-radius: 26px; overflow: hidden;
         background: radial-gradient(ellipse at 50% 45%, #0f2a29 0%, #08191a 62%, #030a0a 100%);
